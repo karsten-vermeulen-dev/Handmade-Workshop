@@ -47,7 +47,6 @@ private:
 	std::unique_ptr<Shader> m_textShader;
 	std::unique_ptr<Shader> m_lightShader;
 	std::unique_ptr<Shader> m_testShader;
-
 	std::unique_ptr<FreeCamera> m_sceneCamera;
 	
 	//For current testing===============================================
@@ -57,22 +56,13 @@ private:
 
 	std::unique_ptr<Light> m_light;
 	std::unique_ptr<Model> m_model;
-
-	//std::unique_ptr<Quad> m_quad;
-	//std::unique_ptr<Cuboid> m_cube;
-	//std::unique_ptr<Sphere> m_sphere;
-
-	//std::unique_ptr<Tile> m_labelX;
-	//std::unique_ptr<Tile> m_labelY;
-	//std::unique_ptr<Tile> m_labelZ;
-
-	//Using static objects will enforce more copies being made 
-	//especially if the vector container has not been reserved
-	//Prefer to use smart pointer objects instead to avoid copies
-	//std::vector<Text> m_text;
-	//std::vector<Audio> m_audio;
-	//==================================================================
-
 	std::vector<std::unique_ptr<Object>> m_objects;
-
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+	float A = 0.0f;
+	float X = 0.0f;
+	float Y = 0.0f;
+	float Z = 0.0f;
+	//std::unique_ptr<Cuboid> m_cube;
 };
