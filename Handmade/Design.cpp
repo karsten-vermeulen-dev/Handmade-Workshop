@@ -176,6 +176,9 @@ bool Design::OnEnter()
 	//=========================================================================
 
 	Screen::Instance()->SetColor(30U, 30U, 30U);
+
+	ImGui::GetIO().Fonts->AddFontFromFileTTF("Assets/Fonts/Arial.ttf", 16.0f);
+	ImGui::GetIO().Fonts->Build();
 	
 	return true;
 }
@@ -279,6 +282,7 @@ bool Design::Render()
 
 	//This makes sure the mouse has no effect on sizing/dragging the window
 	ImGui::SetWindowFocus(nullptr);
+	
 
 	ImGui::Begin("Output console");
 	
@@ -306,7 +310,7 @@ bool Design::Render()
 	
 	ImGui::End();
 
-	ImGui::Begin("Cords&Colors");
+	ImGui::Begin("Cords");
 	ImGui::Button("Reset");
 	ImGui::Text("Change Coordinates");
 	
@@ -315,12 +319,12 @@ bool Design::Render()
 	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f);
 	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f);
 
-
 	bool showWindow = false;
-	ImGui::Checkbox("Apply color in real-time", &showWindow);
-	//ImVec4 color = ImVec4(R, G, B, A); <--This could be an issue
+
 	static float my_color[] = { R,G,B,A };
-	ImGui::ColorEdit3("clear color", my_color);
+	ImGui::Checkbox("Apply color in real-time", &showWindow);
+	ImGui::ColorEdit3("color", (float*)&my_color); //TODO: Doesn't record changes in colour
+	//ImVec4 color = ImVec4(R, G, B, A); 
 	ImGui::End();
 
 	ImGui::Begin("Output");

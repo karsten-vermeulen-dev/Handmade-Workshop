@@ -34,5 +34,5 @@ private:
 
 	Buffer m_buffer;
 	glm::vec2 m_dimension;
-
+	bool m_linkOnce;
 };

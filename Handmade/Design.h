@@ -34,6 +34,10 @@ public:
 	virtual bool Render();
 	virtual void OnExit();
 
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+	float A = 0.0f;
 private:
 
 	std::unique_ptr<Grid> m_grid;
@@ -57,10 +61,6 @@ private:
 	std::unique_ptr<Light> m_light;
 	std::unique_ptr<Model> m_model;
 	std::vector<std::unique_ptr<Object>> m_objects;
-	float R = 0.0f;
-	float G = 0.0f;
-	float B = 0.0f;
-	float A = 0.0f;
 	float X = 0.0f;
 	float Y = 0.0f;
 	float Z = 0.0f;
