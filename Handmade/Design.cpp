@@ -62,7 +62,7 @@ bool Design::OnEnter()
 		return false;
 	}
 
-	/*m_lightShader->BindAttribute("vertexIn");
+	m_lightShader->BindAttribute("vertexIn");
 	m_lightShader->BindAttribute("colorIn");
 	m_lightShader->BindAttribute("textureIn");
 	m_lightShader->BindAttribute("normalIn");
@@ -83,7 +83,7 @@ bool Design::OnEnter()
 	m_lightShader->BindUniform("material.ambient");
 	m_lightShader->BindUniform("material.diffuse");
 	m_lightShader->BindUniform("material.specular");
-	m_lightShader->BindUniform("material.shininess");*/
+	m_lightShader->BindUniform("material.shininess");
 
 	//m_lightShader->BindUniform("light.attenuationLinear");
 	//m_lightShader->BindUniform("light.attenuationConstant");
@@ -299,6 +299,11 @@ bool Design::Render()
 	//==============================================================================
 
 	m_grid->Render(mainShader);
+	lightShader.Use();
+	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
+	m_model->Render(lightShader);
+	m_light->SendToShader(lightShader);
+	m_sceneCamera->SendToShader(lightShader);
 
 	/*lightShader.Use();
 	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
@@ -315,76 +320,6 @@ bool Design::Render()
 
 	//m_model->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_model->Render(lightShader);
-
-	//==============================================================================
-	//Text rendering & UI
-	//==============================================================================
-
-	/*textShader.Use();
-
-	m_sceneCamera->CreateOrthoView();
-	m_sceneCamera->Update(16.0f);
-	m_sceneCamera->SendToShader(textShader);
-
-	auto labelPosition = m_sceneCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionX());
-	m_axesLabelText->IsFirstLetterCentered(true);
-	m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	m_axesLabelText->SetString("X");
-	m_axesLabelText->SendToShader(textShader);
-	m_axesLabelText->Render(textShader);*/
-
-	//labelPosition = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionY());
-	//m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	//m_axesLabelText->SendToShader(textShader);
-	//m_axesLabelText->SetString("Y");
-	//m_axesLabelText->Render(textShader);
-
-	//labelPosition = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionZ());
-	//m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	//m_axesLabelText->SendToShader(textShader);
-	//m_axesLabelText->SetString("Z");
-	//m_axesLabelText->Render(textShader);
-
-	//For current testing
-	/*auto count = 0;
-
-	for (auto& text : m_text)
-	{
-		text.GetTransform().SetPosition(10.0f, (resolution.y - 50.0f - count * 100.0f), 0.0f);
-		text.SendToShader(textShader);
-		text.Render(textShader);
-		count++;
-	}*/
-
-	//m_quad->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
-	//m_quad->Render(*Shader::Instance());
-
-	//m_sphere->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
-	//m_sphere->Render(*Shader::Instance());
-
-	//TEST CODE to be used later on
-	/*m_UICamera->SetOrthoView();
-	m_UICamera->Update();
-
-	glm::vec2 pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionX());
-	m_labelX->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelX->Render();
-
-	pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionY());
-	m_labelY->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelY->Render();
-
-	pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionZ());
-	m_labelZ->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelZ->Render();*/
-
-	/*for (const auto& object : m_objects)
-	{
-		if (object->IsVisible())
-		{
-			object->Render(lightShader);
-		}
-	}*/
 
 	//==============================================================================
 	//ImGUI UI (WIP)

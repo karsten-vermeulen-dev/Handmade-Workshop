@@ -3,7 +3,7 @@
 
 //======================================================================================================
 Quad::Quad(GLfloat width, GLfloat height, GLfloat r, GLfloat g, GLfloat b, GLfloat a) 
-	: m_buffer("Quad", 6, true)
+	: m_buffer("Quad_", 6, true)
 {
 	m_dimension = glm::vec2(width, height);
 
@@ -42,11 +42,13 @@ Quad::Quad(GLfloat width, GLfloat height, GLfloat r, GLfloat g, GLfloat b, GLflo
 	m_buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
 	m_buffer.FillVBO(Buffer::VBO::NormalBuffer, normals, sizeof(normals), Buffer::Fill::Ongoing);
 	m_buffer.FillEBO(indices, sizeof(indices), Buffer::Fill::Ongoing);
+
+	m_linkOnce = false;
 }
 //======================================================================================================
 Quad::~Quad()
 {
-	m_buffer.Destroy("Quad");
+	m_buffer.Destroy("Quad_");
 }
 //======================================================================================================
 void Quad::SetDimension(const glm::vec2& dimension)
@@ -94,15 +96,18 @@ void Quad::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 void Quad::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
-	m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
-		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
-		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
-		Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
-	//m_buffer.LinkVBO(shader.GetAttributeID("normalIn"),
-		//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-
+	if (!m_linkOnce)
+	{
+		m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+			Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+		m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+			Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
+		m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
+			Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
+		//m_buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+			//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+		m_linkOnce = true;
+	}
 	//m_normalMatrix = glm::inverse(glm::mat3(m_transform.GetMatrix()));
 	//shader.SendData("normal", m_normalMatrix);
 
