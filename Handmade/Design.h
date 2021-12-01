@@ -40,10 +40,6 @@ public:
 	virtual bool Render();
 	virtual void OnExit();
 
-	float R = 0.0f;
-	float G = 0.0f;
-	float B = 0.0f;
-	float A = 0.0f;
 private:
 
 	void RenderConsoleWindow();
@@ -96,5 +92,9 @@ private:
 	float X = 0.0f;
 	float Y = 0.0f;
 	float Z = 0.0f;
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+	float A = 0.0f;
 	//std::unique_ptr<Cuboid> m_cube;
 };

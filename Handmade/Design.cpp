@@ -55,7 +55,7 @@ bool Design::OnEnter()
 	//===================================================================
 	//TODO - There is a bug with the lighting shaders
 
-	m_lightShader = std::make_unique<Shader>();
+	/*m_lightShader = std::make_unique<Shader>();
 
 	if (!m_lightShader->Create("Shaders/Light.vert", "Shaders/Light.frag"))
 	{
@@ -83,7 +83,7 @@ bool Design::OnEnter()
 	m_lightShader->BindUniform("material.ambient");
 	m_lightShader->BindUniform("material.diffuse");
 	m_lightShader->BindUniform("material.specular");
-	m_lightShader->BindUniform("material.shininess");
+	m_lightShader->BindUniform("material.shininess");*/
 
 	//m_lightShader->BindUniform("light.attenuationLinear");
 	//m_lightShader->BindUniform("light.attenuationConstant");
@@ -269,7 +269,7 @@ bool Design::Render()
 {
 	auto& mainShader = *m_mainShader.get();
 	auto& textShader = *m_textShader.get();
-	auto& lightShader = *m_lightShader.get();
+	//auto& lightShader = *m_lightShader.get();
 	auto& testShader = *m_testShader.get();
 
 	auto SetViewport = [](const glm::ivec4& viewport, const glm::uvec4& color)
@@ -299,11 +299,11 @@ bool Design::Render()
 	//==============================================================================
 
 	m_grid->Render(mainShader);
-	lightShader.Use();
-	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
-	m_model->Render(lightShader);
-	m_light->SendToShader(lightShader);
-	m_sceneCamera->SendToShader(lightShader);
+	//lightShader.Use();
+	//lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
+	//m_model->Render(mainShader);
+	m_sceneCamera->SendToShader(mainShader);
+	//m_light->SendToShader(lightShader);
 
 	/*lightShader.Use();
 	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
@@ -384,8 +384,24 @@ void Design::RenderPropertiesWindow()
 	auto windowSize = ImVec2(static_cast<float>(m_minorWidth - UI_PADDING * 2.0f),
 		static_cast<float>(m_resolution.y - UI_PADDING * 2.0f));
 
+	static float color[] = { R,G,B,A };
+	
 	ImGui::SetWindowPos("Properties", windowPos);
 	ImGui::SetWindowSize("Properties", windowSize);
+
+	//m_model->GetTransform().SetPosition(X, Y, Z);
+	if (ImGui::Button("Reset Cords"))
+	{
+		X = 0.0f;
+		Y = 0.0f;
+		Z = 0.0f;
+	};
+	ImGui::SliderFloat("Change X axis", &X, -100.0f, 100.0f);
+	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f);
+	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f);
+	//color
+	//ImVec4 color = ImVec4(R, G, B, A); <--This could be an issue
+	ImGui::ColorEdit3("clear color", color);
 
 	ImGui::End();
 }
