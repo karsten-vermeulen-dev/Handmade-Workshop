@@ -62,7 +62,6 @@ private:
 	std::unique_ptr<Shader> m_textShader;
 	std::unique_ptr<Shader> m_lightShader;
 	std::unique_ptr<Shader> m_testShader;
-
 	std::unique_ptr<FreeCamera> m_sceneCamera;
 	
 	//For current testing===============================================
@@ -90,5 +89,12 @@ private:
 
 	std::deque<std::string> m_consoleLog;
 	std::vector<std::unique_ptr<Object>> m_objects;
-
+	float X = 0.0f;
+	float Y = 0.0f;
+	float Z = 0.0f;
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+	float A = 0.0f;
+	//std::unique_ptr<Cuboid> m_cube;
 };

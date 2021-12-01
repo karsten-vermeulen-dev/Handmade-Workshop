@@ -55,14 +55,14 @@ bool Design::OnEnter()
 	//===================================================================
 	//TODO - There is a bug with the lighting shaders
 
-	m_lightShader = std::make_unique<Shader>();
+	/*m_lightShader = std::make_unique<Shader>();
 
 	if (!m_lightShader->Create("Shaders/Light.vert", "Shaders/Light.frag"))
 	{
 		return false;
 	}
 
-	/*m_lightShader->BindAttribute("vertexIn");
+	m_lightShader->BindAttribute("vertexIn");
 	m_lightShader->BindAttribute("colorIn");
 	m_lightShader->BindAttribute("textureIn");
 	m_lightShader->BindAttribute("normalIn");
@@ -269,7 +269,7 @@ bool Design::Render()
 {
 	auto& mainShader = *m_mainShader.get();
 	auto& textShader = *m_textShader.get();
-	auto& lightShader = *m_lightShader.get();
+	//auto& lightShader = *m_lightShader.get();
 	auto& testShader = *m_testShader.get();
 
 	auto SetViewport = [](const glm::ivec4& viewport, const glm::uvec4& color)
@@ -299,6 +299,11 @@ bool Design::Render()
 	//==============================================================================
 
 	m_grid->Render(mainShader);
+	//lightShader.Use();
+	//lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
+	//m_model->Render(mainShader);
+	m_sceneCamera->SendToShader(mainShader);
+	//m_light->SendToShader(lightShader);
 
 	/*lightShader.Use();
 	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
@@ -315,76 +320,6 @@ bool Design::Render()
 
 	//m_model->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_model->Render(lightShader);
-
-	//==============================================================================
-	//Text rendering & UI
-	//==============================================================================
-
-	/*textShader.Use();
-
-	m_sceneCamera->CreateOrthoView();
-	m_sceneCamera->Update(16.0f);
-	m_sceneCamera->SendToShader(textShader);
-
-	auto labelPosition = m_sceneCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionX());
-	m_axesLabelText->IsFirstLetterCentered(true);
-	m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	m_axesLabelText->SetString("X");
-	m_axesLabelText->SendToShader(textShader);
-	m_axesLabelText->Render(textShader);*/
-
-	//labelPosition = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionY());
-	//m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	//m_axesLabelText->SendToShader(textShader);
-	//m_axesLabelText->SetString("Y");
-	//m_axesLabelText->Render(textShader);
-
-	//labelPosition = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionZ());
-	//m_axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	//m_axesLabelText->SendToShader(textShader);
-	//m_axesLabelText->SetString("Z");
-	//m_axesLabelText->Render(textShader);
-
-	//For current testing
-	/*auto count = 0;
-
-	for (auto& text : m_text)
-	{
-		text.GetTransform().SetPosition(10.0f, (resolution.y - 50.0f - count * 100.0f), 0.0f);
-		text.SendToShader(textShader);
-		text.Render(textShader);
-		count++;
-	}*/
-
-	//m_quad->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
-	//m_quad->Render(*Shader::Instance());
-
-	//m_sphere->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
-	//m_sphere->Render(*Shader::Instance());
-
-	//TEST CODE to be used later on
-	/*m_UICamera->SetOrthoView();
-	m_UICamera->Update();
-
-	glm::vec2 pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionX());
-	m_labelX->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelX->Render();
-
-	pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionY());
-	m_labelY->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelY->Render();
-
-	pixels = m_mainCamera->ConvertWorldToScreen(m_axes->GetArrowTipPositionZ());
-	m_labelZ->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	m_labelZ->Render();*/
-
-	/*for (const auto& object : m_objects)
-	{
-		if (object->IsVisible())
-		{
-			object->Render(lightShader);
-		}
-	}*/
 
 	//==============================================================================
 	//ImGUI UI (WIP)
@@ -449,8 +384,24 @@ void Design::RenderPropertiesWindow()
 	auto windowSize = ImVec2(static_cast<float>(m_minorWidth - UI_PADDING * 2.0f),
 		static_cast<float>(m_resolution.y - UI_PADDING * 2.0f));
 
+	static float color[] = { R,G,B,A };
+	
 	ImGui::SetWindowPos("Properties", windowPos);
 	ImGui::SetWindowSize("Properties", windowSize);
+
+	//m_model->GetTransform().SetPosition(X, Y, Z);
+	if (ImGui::Button("Reset Cords"))
+	{
+		X = 0.0f;
+		Y = 0.0f;
+		Z = 0.0f;
+	};
+	ImGui::SliderFloat("Change X axis", &X, -100.0f, 100.0f);
+	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f);
+	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f);
+	//color
+	//ImVec4 color = ImVec4(R, G, B, A); <--This could be an issue
+	ImGui::ColorEdit3("clear color", color);
 
 	ImGui::End();
 }
