@@ -196,7 +196,7 @@ bool Design::OnEnter()
 	//m_model->SetColor(1, 0, 1, 1);
 
 	//m_quad = std::make_unique<Quad>();
-	//m_cube = std::make_unique<Cuboid>();
+	m_cube = std::make_unique<Cuboid>();
 	//m_sphere = std::make_unique<Sphere>(10.0f, 50.0f, 50.0f);
 
 	return true;
@@ -315,8 +315,8 @@ bool Design::Render()
 	//m_axes->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_axes->Render(lightShader);
 
-	//m_cube->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
-	//m_cube->Render(lightShader);
+	m_cube->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
+	m_cube->Render(mainShader);
 
 	//m_model->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_model->Render(lightShader);
@@ -382,26 +382,34 @@ void Design::RenderPropertiesWindow()
 
 	auto windowPos = ImVec2(static_cast<float>(m_majorWidth + UI_PADDING), UI_PADDING);
 	auto windowSize = ImVec2(static_cast<float>(m_minorWidth - UI_PADDING * 2.0f),
-		static_cast<float>(m_resolution.y - UI_PADDING * 2.0f));
+	static_cast<float>(m_resolution.y - UI_PADDING * 2.0f));
 
-	static float color[] = { R,G,B,A };
 	
 	ImGui::SetWindowPos("Properties", windowPos);
 	ImGui::SetWindowSize("Properties", windowSize);
 
-	//m_model->GetTransform().SetPosition(X, Y, Z);
-	if (ImGui::Button("Reset Cords"))
+	m_cube->GetTransform().SetPosition(X, Y, Z);
+	m_cube->GetTransform().SetScale(S);
+	m_cube->GetTransform().SetRotation(pitch, yaw, roll);
+	if (ImGui::Button("Reset"))
 	{
 		X = 0.0f;
 		Y = 0.0f;
 		Z = 0.0f;
+		S = 1.0f;
+		pitch = 0.0f;
+		yaw = 0.0f;
+		roll = 0.0f;
 	};
-	ImGui::SliderFloat("Change X axis", &X, -100.0f, 100.0f);
-	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f);
-	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f);
+	ImGui::SliderFloat("Change X axis", &X, -100.0f, 100.0f,"%.0f x");
+	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f,"%.0f y");
+	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f,"%.0f z");
+	ImGui::InputFloat("Scale", &S, 0.25f, 5.0f);
+	ImGui::SliderAngle("Rotate X",&pitch,-360.0f,360.0f,"%.0f deg",0);
 	//color
-	//ImVec4 color = ImVec4(R, G, B, A); <--This could be an issue
-	ImGui::ColorEdit3("clear color", color);
+	static float color[4] = { R,G,B,A };
+	//m_cube->SetColor(R,G,B,A);
+	ImGui::ColorPicker4("clear color", &color[0]);
 
 	ImGui::End();
 }

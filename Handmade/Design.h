@@ -70,10 +70,10 @@ private:
 	std::unique_ptr<Audio> m_audio3;*/
 
 	std::unique_ptr<Light> m_light;
-	std::unique_ptr<Model> m_model;
+	//std::unique_ptr<Model> m_model;
 
 	//std::unique_ptr<Quad> m_quad;
-	//std::unique_ptr<Cuboid> m_cube;
+	std::unique_ptr<Cuboid> m_cube;
 	//std::unique_ptr<Sphere> m_sphere;
 
 	//std::unique_ptr<Tile> m_labelX;
@@ -96,5 +96,9 @@ private:
 	float G = 0.0f;
 	float B = 0.0f;
 	float A = 0.0f;
+	float S = 0.0f; //Scale
+	float pitch = 0.0f;
+	float yaw = 0.0f;
+	float roll = 0.0f;
 	//std::unique_ptr<Cuboid> m_cube;
 };
