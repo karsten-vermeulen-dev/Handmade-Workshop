@@ -2,9 +2,11 @@
 #include "Quad.h"
 
 //======================================================================================================
-Quad::Quad(GLfloat width, GLfloat height, GLfloat r, GLfloat g, GLfloat b, GLfloat a) 
-	: m_buffer("Quad_", 6, true)
+Quad::Quad(Object* parent, GLfloat width, GLfloat height, GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+	: m_buffer("Quad", 6, true)
 {
+	m_parent = parent;
+	m_color = glm::vec4(r, g, b, a);
 	m_dimension = glm::vec2(width, height);
 
 	glm::vec2 halfDimension = m_dimension * 0.5f;
@@ -68,6 +70,11 @@ void Quad::SetDimension(GLfloat width, GLfloat height)
 	m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
 }
 //======================================================================================================
+const glm::vec4& Quad::GetColor() const
+{
+	return m_color;
+}
+//======================================================================================================
 void Quad::SetTextureScale(GLfloat width, GLfloat height)
 {
 	GLfloat UVs[] = { 0.0f, 0.0f,
@@ -91,6 +98,7 @@ void Quad::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 						 r, g, b, a };
 
 	m_buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
+	m_color = glm::vec4(r, g, b, a);
 }
 //======================================================================================================
 void Quad::Render(Shader& shader)
@@ -111,7 +119,7 @@ void Quad::Render(Shader& shader)
 	//m_normalMatrix = glm::inverse(glm::mat3(m_transform.GetMatrix()));
 	//shader.SendData("normal", m_normalMatrix);
 
-	shader.SendData("model", m_transform.GetMatrix());
+	shader.SendData("model", m_parent->GetTransform().GetMatrix() * m_transform.GetMatrix());
 	shader.SendData("isTextured", static_cast<GLuint>(m_isTextured));
 
 	//shader.SendData("isText", false);

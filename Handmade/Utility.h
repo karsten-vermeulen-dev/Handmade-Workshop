@@ -1,7 +1,7 @@
 #pragma once
 
 /*===================================================================#
-| 'Utility' source files last updated on 1 December 2021             |
+| 'Utility' source files last updated on 8 December 2021             |
 #====================================================================#
 | Class has not been fully tested. No known issues found.            |
 #===================================================================*/
@@ -12,6 +12,7 @@
 #include <vector>
 #include "GLAD/gl.h"
 #include <glm.hpp>
+#include <gtc/quaternion.hpp>
 
 class Utility
 {
@@ -52,6 +53,7 @@ public:
 	static std::string NumToStr(const glm::vec2& value);
 	static std::string NumToStr(const glm::vec3& value);
 	static std::string NumToStr(const glm::vec4& value);
+	static std::string NumToStr(const glm::quat& value);
 
 	static void Log(Destination destination,
 		GLfloat value, const std::string& label = "");
@@ -60,9 +62,13 @@ public:
 	static void Log(Destination destination,
 		const glm::vec3& value, const std::string& label = "");
 	static void Log(Destination destination,
+		const glm::vec4& value, const std::string& label = "");
+	static void Log(Destination destination,
+		const glm::quat& value, const std::string& label = "");
+	static void Log(Destination destination,
 		const std::string& message, Severity severity = Severity::Default);
 	static void Log(Destination destination,
-		GLfloat x, GLfloat y, GLfloat z = 0.0f, const std::string& label = "");
+		GLfloat x, GLfloat y, GLfloat z = 0.0f, GLfloat w = 1.0f, const std::string& label = "");
 
 private:
 

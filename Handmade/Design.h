@@ -1,7 +1,7 @@
 #pragma once
 
 /*===================================================================#
-| 'Design' source files last updated on 30 November 2021             |
+| 'Design' source files last updated on 8 December 2021              |
 #===================================================================*/
 
 #include <deque>
@@ -32,7 +32,7 @@ class Design : public State
 
 public:
 
-	Design() {}
+	Design();
 	virtual ~Design() {}
 
 	virtual bool OnEnter();
@@ -45,11 +45,13 @@ private:
 	void RenderConsoleWindow();
 	void RenderPropertiesWindow();
 
-	glm::ivec2 m_resolution;
 	GLint m_minorWidth;
 	GLint m_majorWidth;
 	GLint m_minorHeight;
 	GLint m_majorHeight;
+
+	glm::ivec2 m_resolution;
+	glm::vec3 m_sceneRotation;
 
 	std::unique_ptr<Grid> m_grid;
 	std::unique_ptr<Axes> m_axes;
@@ -63,7 +65,7 @@ private:
 	std::unique_ptr<Shader> m_lightShader;
 	std::unique_ptr<Shader> m_testShader;
 	std::unique_ptr<FreeCamera> m_sceneCamera;
-	
+
 	//For current testing===============================================
 	/*std::unique_ptr<Audio> m_audio1;
 	std::unique_ptr<Audio> m_audio2;
@@ -72,8 +74,8 @@ private:
 	std::unique_ptr<Light> m_light;
 	//std::unique_ptr<Model> m_model;
 
-	//std::unique_ptr<Quad> m_quad;
-	std::unique_ptr<Cuboid> m_cube;
+	std::unique_ptr<Quad> m_quad;
+	//std::unique_ptr<Cuboid> m_cube;
 	//std::unique_ptr<Sphere> m_sphere;
 
 	//std::unique_ptr<Tile> m_labelX;

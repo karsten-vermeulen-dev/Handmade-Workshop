@@ -1,7 +1,7 @@
 #pragma once
 
 /*===================================================================#
-| 'Object' source files last updated on 23 November 2021             |
+| 'Object' source files last updated on 8 December 2021              |
 #====================================================================#
 | Class has not been fully tested. No known issues found.            |
 #===================================================================*/
@@ -54,6 +54,7 @@ protected:
 
 	Object* m_parent;
 	std::string m_tag;
+	glm::vec4 m_color;
 	GLuint m_priority;
 	Transform m_transform;
 	glm::mat3 m_normalMatrix;

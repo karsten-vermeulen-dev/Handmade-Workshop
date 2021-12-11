@@ -7,13 +7,24 @@
 #include "imgui/imgui_impl_sdl.h"
 
 #include "BoxCollider.h"
+#include "Utility.h"
 
+//======================================================================================================
+Design::Design()
+{
+	m_minorWidth = 0;
+	m_majorWidth = 0;
+	m_minorHeight = 0;
+	m_majorHeight = 0;
+	m_resolution = glm::ivec2(0);
+	m_sceneRotation = glm::vec3(45.0f, -30.0f, 0.0f);
+}
 //======================================================================================================
 bool Design::OnEnter()
 {
 	//TODO - Use a color picker to change this
 	Screen::Instance()->SetColor(30U, 30U, 30U);
-	
+
 	m_mainShader = std::make_unique<Shader>();
 
 	if (!m_mainShader->Create("Shaders/Main.vert", "Shaders/Main.frag"))
@@ -51,7 +62,7 @@ bool Design::OnEnter()
 	m_textShader->BindUniform("textureImage");
 
 	m_consoleLog.push_front("'Text.vert' and 'Text.frag' shaders created and compiled.");
-	
+
 	//===================================================================
 	//TODO - There is a bug with the lighting shaders
 
@@ -90,7 +101,7 @@ bool Design::OnEnter()
 	//m_lightShader->BindUniform("light.attenuationQuadratic");
 
 	//m_consoleLog.push_front("'Light.vert' and 'Light.frag' shaders created and compiled.");
-	
+
 	//TEST CODE to be used later for multiple lights
 	/*for (size_t i = 0; i < TOTAL_LIGHTS; i++)
 	{
@@ -116,14 +127,14 @@ bool Design::OnEnter()
 	{
 		return false;
 	}
-	
+
 	m_consoleLog.push_front("Text sub-system initialized.");
 
 	if (!(Audio::Initialize()))
 	{
 		return false;
 	}
-	
+
 	m_consoleLog.push_front("Audio sub-system initialized.");
 
 	//===================================================================
@@ -147,10 +158,12 @@ bool Design::OnEnter()
 	ImGui::GetIO().Fonts->Build();
 
 	//=========================================================================
-	
+
 	//WIP======================================================================
-	
+
 	//m_axes = std::make_unique<Axes>("Arrow.obj");
+
+	m_quad = std::make_unique<Quad>(m_grid.get());
 
 	/*m_topText = std::make_unique<Text>("Quikhand", "Quikhand.ttf", 30);
 	m_topText->SetColor(1.0f, 0.0f, 0.196f, 1.0f);
@@ -195,8 +208,7 @@ bool Design::OnEnter()
 	//m_model->GetTransform().SetScale(5.0f, 5.0f, 5.0f);
 	//m_model->SetColor(1, 0, 1, 1);
 
-	//m_quad = std::make_unique<Quad>();
-	m_cube = std::make_unique<Cuboid>();
+	//m_cube = std::make_unique<Cuboid>();
 	//m_sphere = std::make_unique<Sphere>(10.0f, 50.0f, 50.0f);
 
 	return true;
@@ -218,12 +230,11 @@ State* Design::Update(int deltaTime)
 	m_sceneCamera->GetTransform().SetPosition(camPos);
 
 	auto mouseMotion = Input::Instance()->GetMouseMotion();
-	static glm::vec3 eulerAngles = m_grid->GetTransform().GetEulerAngles();
 
 	//Screen/Mouse collider code - notr yet working properly==========================
 	BoxCollider sceneBox;
 	auto dimension = m_sceneCamera->GetResolution();
-	
+
 	sceneBox.SetPosition(dimension.x * 0.5f, dimension.y * 0.5f, 0.0f);
 	sceneBox.SetDimension(dimension.x, dimension.y, 0.0f);
 	sceneBox.Update();
@@ -238,14 +249,14 @@ State* Design::Update(int deltaTime)
 
 	if (Input::Instance()->IsLeftButtonClicked() && sceneBox.IsColliding(mouseBox))
 	{
-		eulerAngles.x += -mouseMotion.y;
-		eulerAngles.y += mouseMotion.x;
+		m_sceneRotation.x += -mouseMotion.y;
+		m_sceneRotation.y += mouseMotion.x;
 	}
 
-	m_grid->GetTransform().SetRotation(eulerAngles);
-
-	//==============================================================================
+	m_grid->GetTransform().SetRotation(m_sceneRotation);
 	
+	//==============================================================================
+
 	for (const auto& object : m_objects)
 	{
 		if (object->IsActive())
@@ -280,9 +291,9 @@ bool Design::Render()
 	};
 
 	//Console viewport
-	SetViewport(glm::ivec4(0, 0, m_majorWidth, m_minorHeight), 
+	SetViewport(glm::ivec4(0, 0, m_majorWidth, m_minorHeight),
 		glm::uvec4(255U, 200U, 0U, 1U));
-	
+
 	//Properties viewport
 	SetViewport(glm::ivec4(m_majorWidth, 0, m_minorWidth, m_resolution.y),
 		glm::uvec4(0U, 144U, 255U, 1U));
@@ -290,20 +301,16 @@ bool Design::Render()
 	//Scene viewport
 	m_sceneCamera->SetViewport(0, m_minorHeight, m_majorWidth, m_majorHeight);
 	m_sceneCamera->CreatePerspView();
-	
+
 	mainShader.Use();
-	
+
 	m_sceneCamera->Update(16.0f);
 	m_sceneCamera->SendToShader(mainShader);
 
 	//==============================================================================
 
 	m_grid->Render(mainShader);
-	//lightShader.Use();
-	//lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
-	//m_model->Render(mainShader);
-	m_sceneCamera->SendToShader(mainShader);
-	//m_light->SendToShader(lightShader);
+	m_quad->Render(mainShader);
 
 	/*lightShader.Use();
 	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
@@ -328,9 +335,9 @@ bool Design::Render()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	
+
 	RenderConsoleWindow();
-	RenderPropertiesWindow();	
+	RenderPropertiesWindow();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -388,28 +395,33 @@ void Design::RenderPropertiesWindow()
 	ImGui::SetWindowPos("Properties", windowPos);
 	ImGui::SetWindowSize("Properties", windowSize);
 
-	m_cube->GetTransform().SetPosition(X, Y, Z);
-	m_cube->GetTransform().SetScale(S);
-	m_cube->GetTransform().SetRotation(pitch, yaw, roll);
-	if (ImGui::Button("Reset"))
+	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Transform");
+	ImGui::Separator();
+	
+	auto position = m_quad->GetTransform().GetPosition();
+	ImGui::SliderFloat3("Position", &position.x, -25.0f, 25.0f, "%.2f");
+	m_quad->GetTransform().SetPosition(position);
+	
+	//TODO - There is a tiny bug here with the sliders
+	auto rotation = m_quad->GetTransform().GetEulerAngles();
+	ImGui::SliderFloat3("Rotation", &rotation.x, -360.0f, 360.0f, "%.2f");
+	m_quad->GetTransform().SetRotation(rotation);
+	
+	auto scale = m_quad->GetTransform().GetScale();
+	ImGui::SliderFloat3("Scale", &scale.x, 1.0f, 30.0f, "%.2f");
+	m_quad->GetTransform().SetScale(scale);
+
+	for (int i = 0; i < 5; i++)
 	{
-		X = 0.0f;
-		Y = 0.0f;
-		Z = 0.0f;
-		S = 1.0f;
-		pitch = 0.0f;
-		yaw = 0.0f;
-		roll = 0.0f;
-	};
-	ImGui::SliderFloat("Change X axis", &X, -100.0f, 100.0f,"%.0f x");
-	ImGui::SliderFloat("Change Y axis", &Y, -100.0f, 100.0f,"%.0f y");
-	ImGui::SliderFloat("Change Z Axis", &Z, -100.0f, 100.0f,"%.0f z");
-	ImGui::InputFloat("Scale", &S, 0.25f, 5.0f);
-	ImGui::SliderAngle("Rotate X",&pitch,-360.0f,360.0f,"%.0f deg",0);
-	//color
-	static float color[4] = { R,G,B,A };
-	//m_cube->SetColor(R,G,B,A);
-	ImGui::ColorPicker4("clear color", &color[0]);
+		ImGui::Spacing();
+	}
+
+	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Material");
+	ImGui::Separator();
+
+	auto color = m_quad->GetColor();
+	ImGui::ColorEdit4("Color", &color.r);
+	m_quad->SetColor(color);
 
 	ImGui::End();
 }

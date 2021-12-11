@@ -198,27 +198,45 @@ std::string Utility::NumToStr(const glm::vec2& value)
 //======================================================================================================
 std::string Utility::NumToStr(const glm::vec3& value)
 {
-	return std::to_string(value.x) + ", " 
-		+ std::to_string(value.y) + ", " 
+	return std::to_string(value.x) + ", "
+		+ std::to_string(value.y) + ", "
 		+ std::to_string(value.z);
 }
 //======================================================================================================
 std::string Utility::NumToStr(const glm::vec4& value)
 {
-	return std::to_string(value.x) 
-		+ ", " + std::to_string(value.y) 
-		+ ", " + std::to_string(value.z) 
+	return std::to_string(value.x)
+		+ ", " + std::to_string(value.y)
+		+ ", " + std::to_string(value.z)
+		+ ", " + std::to_string(value.w);
+}
+//======================================================================================================
+std::string Utility::NumToStr(const glm::quat& value)
+{
+	return std::to_string(value.x)
+		+ ", " + std::to_string(value.y)
+		+ ", " + std::to_string(value.z)
 		+ ", " + std::to_string(value.w);
 }
 //======================================================================================================
 void Utility::Log(Destination destination, const glm::vec2& value, const std::string& label)
 {
-	Log(destination, value.x, value.y, 0.0f, label);
+	Log(destination, value.x, value.y, 0.0f, 0.0f, label);
 }
 //======================================================================================================
 void Utility::Log(Destination destination, const glm::vec3& value, const std::string& label)
 {
-	Log(destination, value.x, value.y, value.z, label);
+	Log(destination, value.x, value.y, value.z, 0.0f, label);
+}
+//======================================================================================================
+void Utility::Log(Destination destination, const glm::vec4& value, const std::string& label)
+{
+	Log(destination, value.x, value.y, value.z, value.w, label);
+}
+//======================================================================================================
+void Utility::Log(Destination destination, const glm::quat& value, const std::string& label)
+{
+	Log(destination, value.x, value.y, value.z, value.w, label);
 }
 //======================================================================================================
 void Utility::Log(Destination destination, GLfloat value, const std::string& label)
@@ -280,7 +298,8 @@ void Utility::Log(Destination destination, const std::string& message, Severity 
 	}
 }
 //======================================================================================================
-void Utility::Log(Destination destination, GLfloat x, GLfloat y, GLfloat z, const std::string& label)
+void Utility::Log(Destination destination,
+	GLfloat x, GLfloat y, GLfloat z, GLfloat w, const std::string& label)
 {
 	if (!label.empty())
 	{
@@ -288,7 +307,8 @@ void Utility::Log(Destination destination, GLfloat x, GLfloat y, GLfloat z, cons
 		{
 			std::string message = "x = " + std::to_string(x) +
 				", y = " + std::to_string(y) +
-				", z = " + std::to_string(z);
+				", z = " + std::to_string(z) +
+				", w = " + std::to_string(w);
 
 			MessageBox(s_windowHandle,
 				reinterpret_cast<LPCWSTR>(std::wstring(message.begin(), message.end()).c_str()),
@@ -301,7 +321,8 @@ void Utility::Log(Destination destination, GLfloat x, GLfloat y, GLfloat z, cons
 			std::fstream file("Data/Output.log", std::ios_base::out | std::ios_base::app);
 			std::string message = "[" + label + "] " + "x = " + std::to_string(x) +
 				", y = " + std::to_string(y) +
-				", z = " + std::to_string(z) + "\n";
+				", z = " + std::to_string(z) +
+				", w = " + std::to_string(w) + "\n";
 			file << message;
 			file.close();
 		}
