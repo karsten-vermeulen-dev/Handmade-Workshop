@@ -2,9 +2,11 @@
 #include "Input.h"
 
 //======================================================================================================
-Cuboid::Cuboid(GLfloat width, GLfloat height, GLfloat depth,
+Cuboid::Cuboid(Object* parent,GLfloat width, GLfloat height, GLfloat depth,
 	GLfloat r, GLfloat g, GLfloat b, GLfloat a) : m_buffer("Cuboid", 36, true)
 {
+	m_parent = parent;
+	m_color = glm::vec4(r, g, b, a);
 	m_dimension = glm::vec3(width, height, depth);
 
 	glm::vec3 halfDimension = m_dimension * 0.5f;
@@ -114,11 +116,17 @@ Cuboid::Cuboid(GLfloat width, GLfloat height, GLfloat depth,
 	m_buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
 	m_buffer.FillVBO(Buffer::VBO::NormalBuffer, normals, sizeof(normals), Buffer::Fill::Ongoing);
 	m_buffer.FillEBO(indices, sizeof(indices), Buffer::Fill::Ongoing);
+
+	m_linkOnce = false;
 }
 //======================================================================================================
 Cuboid::~Cuboid()
 {
 	m_buffer.Destroy("Cuboid");
+}
+const glm::vec4& Cuboid::GetColor() const 
+{
+	return m_color;
 }
 //======================================================================================================
 void Cuboid::SetTextureScale(GLfloat width, GLfloat height)
@@ -208,15 +216,18 @@ void Cuboid::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 void Cuboid::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
-	m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
-		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
-		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
-		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
-	//m_buffer.LinkVBO(shader.GetAttributeID("normalIn"),
-		//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-
+	if (!m_linkOnce)
+	{
+		m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+			Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+		m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+			Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
+		m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
+			Buffer::VBO::VertexBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
+		//m_buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+			//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+		m_linkOnce = true;
+	}
 	m_normalMatrix = glm::inverse(glm::mat3(m_transform.GetMatrix()));
 
 	//shader.SendData("normal", m_normalMatrix);

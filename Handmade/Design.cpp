@@ -163,7 +163,7 @@ bool Design::OnEnter()
 
 	//m_axes = std::make_unique<Axes>("Arrow.obj");
 
-	m_quad = std::make_unique<Quad>(m_grid.get());
+	//m_quad = std::make_unique<Quad>(m_grid.get());
 
 	/*m_topText = std::make_unique<Text>("Quikhand", "Quikhand.ttf", 30);
 	m_topText->SetColor(1.0f, 0.0f, 0.196f, 1.0f);
@@ -208,7 +208,7 @@ bool Design::OnEnter()
 	//m_model->GetTransform().SetScale(5.0f, 5.0f, 5.0f);
 	//m_model->SetColor(1, 0, 1, 1);
 
-	//m_cube = std::make_unique<Cuboid>();
+	m_cube = std::make_unique<Cuboid>(m_grid.get());
 	//m_sphere = std::make_unique<Sphere>(10.0f, 50.0f, 50.0f);
 
 	return true;
@@ -310,7 +310,7 @@ bool Design::Render()
 	//==============================================================================
 
 	m_grid->Render(mainShader);
-	m_quad->Render(mainShader);
+	//m_quad->Render(mainShader);
 
 	/*lightShader.Use();
 	lightShader.SendData("cameraPosition", m_sceneCamera->GetTransform().GetPosition());
@@ -398,18 +398,18 @@ void Design::RenderPropertiesWindow()
 	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Transform");
 	ImGui::Separator();
 	
-	auto position = m_quad->GetTransform().GetPosition();
+	auto position = m_cube->GetTransform().GetPosition();
 	ImGui::SliderFloat3("Position", &position.x, -25.0f, 25.0f, "%.2f");
-	m_quad->GetTransform().SetPosition(position);
+	m_cube->GetTransform().SetPosition(position);
 	
 	//TODO - There is a tiny bug here with the sliders
-	auto rotation = m_quad->GetTransform().GetEulerAngles();
+	auto rotation = m_cube->GetTransform().GetEulerAngles();
 	ImGui::SliderFloat3("Rotation", &rotation.x, -360.0f, 360.0f, "%.2f");
-	m_quad->GetTransform().SetRotation(rotation);
+	m_cube->GetTransform().SetRotation(rotation);
 	
-	auto scale = m_quad->GetTransform().GetScale();
+	auto scale = m_cube->GetTransform().GetScale();
 	ImGui::SliderFloat3("Scale", &scale.x, 1.0f, 30.0f, "%.2f");
-	m_quad->GetTransform().SetScale(scale);
+	m_cube->GetTransform().SetScale(scale);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -419,9 +419,9 @@ void Design::RenderPropertiesWindow()
 	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Material");
 	ImGui::Separator();
 
-	auto color = m_quad->GetColor();
+	static auto color = m_cube->GetColor();
 	ImGui::ColorEdit4("Color", &color.r);
-	m_quad->SetColor(color);
+	m_cube->SetColor(color);
 
 	ImGui::End();
 }

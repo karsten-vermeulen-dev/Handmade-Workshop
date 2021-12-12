@@ -74,8 +74,8 @@ private:
 	std::unique_ptr<Light> m_light;
 	//std::unique_ptr<Model> m_model;
 
-	std::unique_ptr<Quad> m_quad;
-	//std::unique_ptr<Cuboid> m_cube;
+	//std::unique_ptr<Quad> m_quad;
+	std::unique_ptr<Cuboid> m_cube;
 	//std::unique_ptr<Sphere> m_sphere;
 
 	//std::unique_ptr<Tile> m_labelX;
