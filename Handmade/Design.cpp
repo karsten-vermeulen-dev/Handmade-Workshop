@@ -394,15 +394,21 @@ void Design::RenderPropertiesWindow()
 	
 	ImGui::SetWindowPos("Properties", windowPos);
 	ImGui::SetWindowSize("Properties", windowSize);
-
 	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Transform");
+
 	ImGui::Separator();
-	
+	auto fps = ImGui::GetIO().Framerate;
+	ImGui::Text("FPS: %f", fps);
+	float vertices = ImGui::GetIO().MetricsRenderVertices;
+	ImGui::Text("Vertices: %f", vertices);
+	float indices = ImGui::GetIO().MetricsRenderIndices;
+	ImGui::Text("Indices: %f", indices);
+	ImGui::Separator();
 	auto position = m_cube->GetTransform().GetPosition();
 	ImGui::SliderFloat3("Position", &position.x, -25.0f, 25.0f, "%.2f");
 	m_cube->GetTransform().SetPosition(position);
 	
-	//TODO - There is a tiny bug here with the sliders
+	//TODO - Rotation locks with object and Viewport
 	auto rotation = m_cube->GetTransform().GetEulerAngles();
 	ImGui::SliderFloat3("Rotation", &rotation.x, -360.0f, 360.0f, "%.2f");
 	m_cube->GetTransform().SetRotation(rotation);
@@ -411,11 +417,12 @@ void Design::RenderPropertiesWindow()
 	ImGui::SliderFloat3("Scale", &scale.x, 1.0f, 30.0f, "%.2f");
 	m_cube->GetTransform().SetScale(scale);
 
+
+
 	for (int i = 0; i < 5; i++)
 	{
 		ImGui::Spacing();
 	}
-
 	ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, "Material");
 	ImGui::Separator();
 

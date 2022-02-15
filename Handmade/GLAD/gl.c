@@ -2500,7 +2500,8 @@ static void* _gl_handle = NULL;
 static void* glad_gl_dlopen_handle(void) {
 #if GLAD_PLATFORM_APPLE
     static const char *NAMES[] = {
-        "../Frameworks/OpenGL.framework/OpenGL",
+        "../
+		works/OpenGL.framework/OpenGL",
         "/Library/Frameworks/OpenGL.framework/OpenGL",
         "/System/Library/Frameworks/OpenGL.framework/OpenGL",
         "/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL"

@@ -16,9 +16,7 @@
 
 class Light : public Object
 {
-
 public:
-
 	Light(GLfloat x = 0, GLfloat y = 0, GLfloat z = 0);
 	virtual ~Light();
 
@@ -41,7 +39,6 @@ public:
 	virtual void SendToShader(Shader& shader);
 
 private:
-
 	static GLuint s_totalLights;
 
 	GLuint m_lightNumber;
@@ -55,5 +52,4 @@ private:
 	glm::vec3 m_specular;
 
 	Buffer m_buffer;
-
 };

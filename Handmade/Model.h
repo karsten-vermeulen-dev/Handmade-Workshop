@@ -48,7 +48,6 @@ class HashFunction
 {
 
 public:
-
 	size_t operator()(const VertexGroup& v) const
 	{
 		return v.v + v.t + v.n;
@@ -61,7 +60,6 @@ class Model : public Object
 {
 
 public:
-
 	static bool Load(const std::string& tag,
 		const std::string& filename,
 		bool isNormalized = false,
@@ -80,7 +78,6 @@ public:
 	const glm::vec3& GetDimension() const;
 
 	void SetModel(const std::string& tag);
-
 	void SetColor(const glm::vec4& color);
 	void SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 

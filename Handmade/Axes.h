@@ -6,6 +6,7 @@
 | Class has not been fully tested. No known issues found.            |
 #===================================================================*/
 
+#include <algorithm>
 #include "Buffer.h"
 #include "Model.h"
 #include "Object.h"
@@ -14,7 +15,6 @@
 
 class Axes : public Object
 {
-
 public:
 
 	Axes(const std::string& filenameModel);
@@ -33,7 +33,6 @@ public:
 	virtual void SendToShader(Shader& shader) {}
 
 private:
-
 	void Create();
 
 	GLint m_size;
@@ -48,5 +47,4 @@ private:
 	glm::vec3 m_arrowTipPositionZ;
 
 	static GLuint s_totalObjects;
-	
 };
