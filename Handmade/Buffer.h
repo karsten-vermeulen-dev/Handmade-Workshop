@@ -7,6 +7,7 @@
 #===================================================================*/
 
 #include <map>
+#include <Array>
 #include <string>
 #include "GLAD/gl.h"
 
@@ -101,12 +102,12 @@ public:
 
 private:
 
-	GLuint m_VAO;
-	GLuint m_EBO;
-	bool m_hasEBO;
-	GLuint m_VBOs[4];
 	std::string m_tag;
 	GLsizei m_totalVertices;
+	std::array<GLuint, 4> m_VBOs{0,0,0,0};
+	GLuint m_VAO = 0;
+	GLuint m_EBO = 0;
+	bool m_hasEBO = false;
 
 	static std::map<std::string, Buffer> s_buffers;
 

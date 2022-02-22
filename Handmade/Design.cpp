@@ -1,11 +1,9 @@
 #include "Design.h"
 #include "Input.h"
 #include "Screen.h"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
-
 #include "BoxCollider.h"
 #include "Utility.h"
 
@@ -322,9 +320,8 @@ bool Design::Render()
 	//m_axes->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_axes->Render(lightShader);
 
-	m_cube->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
+	//m_cube->GetTransform().SetRotation(m_grid->GetTransform().GetMatrix()*m_cube->GetTransform().GetMatrix());
 	m_cube->Render(mainShader);
-
 	//m_model->GetTransform().SetRotation(m_grid->GetTransform().GetRotation());
 	//m_model->Render(lightShader);
 

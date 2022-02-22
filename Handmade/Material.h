@@ -16,9 +16,7 @@
 
 class Material
 {
-
 public:
-
 	static bool Load(const std::string& tag, const std::string& filename);
 	static void Unload(const std::string& tag = "");
 	static void SetRootFolder(const std::string& rootFolder);
@@ -65,27 +63,25 @@ public:
 	void SendToShader(Shader& shader);
 
 private:
-
-	bool m_isTextured;
+	bool m_isTextured = false;
 	std::string m_tag;
 	std::string m_name;
 	std::vector<Material> m_group;
 
-	GLfloat m_shininess;
-	GLfloat m_refractiveIndex;
+	GLfloat m_shininess = 1.0f;
+	GLfloat m_refractiveIndex = 0.0f;
 
 	Texture m_normalMap;
 	Texture m_ambientMap;
 	Texture m_diffuseMap;
 	Texture m_specularMap;
 
-	glm::vec3 m_ambient;
-	glm::vec3 m_diffuse;
-	glm::vec3 m_specular;
-	glm::vec3 m_emission;
-	glm::vec3 m_transmittance;
+	glm::vec3 m_ambient = glm::vec3(0.0f);
+	glm::vec3 m_diffuse	= glm::vec3(0.0f);
+	glm::vec3 m_emission = glm::vec3(0.0f);
+	glm::vec3 m_specular = glm::vec3(0.0f);
+	glm::vec3 m_transmittance = glm::vec3(1.0f);
 
 	static std::string s_rootFolder;
 	static std::map<std::string, std::vector<Material>> s_materialGroups;
-
 };

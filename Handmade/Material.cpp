@@ -157,10 +157,8 @@ void Material::Unload(const std::string& tag)
 			Texture::Unload(material.GetSpecularMap().GetTag());
 			Texture::Unload(material.GetNormalMap().GetTag());
 		}
-
 		s_materialGroups.erase(it);
 	}
-
 	else
 	{
 		for (auto& material : s_materialGroups)
@@ -173,7 +171,6 @@ void Material::Unload(const std::string& tag)
 				Texture::Unload(mat.GetNormalMap().GetTag());
 			}
 		}
-
 		s_materialGroups.clear();
 	}
 }
@@ -183,23 +180,14 @@ void Material::SetRootFolder(const std::string& rootFolder)
 	s_rootFolder = rootFolder;
 }
 //======================================================================================================
-Material::Material(const std::string& tag, const std::string& filename)
+Material::Material(const std::string& tag, const std::string& filename): m_tag(tag)
 {
-	m_isTextured = false;
-	m_shininess = 1.0f;
-	m_refractiveIndex = 0.0f;
-	m_ambient = glm::vec3(0.0f);
-	m_diffuse = glm::vec3(0.0f);
-	m_specular = glm::vec3(0.0f);
-	m_emission = glm::vec3(0.0f);
-	m_transmittance = glm::vec3(1.0f);
 
 	if (!filename.empty())
 	{
 		Load(tag, filename);
 		SetGroup(tag);
 	}
-
 	else if (!tag.empty())
 	{
 		SetGroup(tag);

@@ -20,7 +20,6 @@ void Buffer::SetCullingMode(Culling culling)
 	{
 		glDisable(GL_CULL_FACE);
 	}
-
 	else
 	{
 		glEnable(GL_CULL_FACE);
@@ -40,13 +39,11 @@ void Buffer::Destroy(const std::string& tag)
 		{
 			glDeleteBuffers(1, &it->second.m_EBO);
 		}
-
-		glDeleteBuffers(4, it->second.m_VBOs);
+		glDeleteBuffers(4, it->second.m_VBOs.data());
 		glDeleteVertexArrays(1, &it->second.m_VAO);
 
 		s_buffers.erase(it);
 	}
-
 	else
 	{
 		for (auto& buffer : s_buffers)
@@ -55,11 +52,9 @@ void Buffer::Destroy(const std::string& tag)
 			{
 				glDeleteBuffers(1, &buffer.second.m_EBO);
 			}
-
-			glDeleteBuffers(4, buffer.second.m_VBOs);
+			glDeleteBuffers(4, buffer.second.m_VBOs.data());
 			glDeleteVertexArrays(1, &buffer.second.m_VAO);
 		}
-
 		s_buffers.clear();
 	}
 }
@@ -69,34 +64,24 @@ void Buffer::SetRenderStyle(RenderStyle renderStyle)
 	glPolygonMode(GL_FRONT_AND_BACK, renderStyle == RenderStyle::Polygonal ? GL_LINE : GL_FILL);
 }
 //======================================================================================================
-Buffer::Buffer(const std::string& tag, GLsizei totalVertices, bool hasEBO)
+Buffer::Buffer(const std::string& tag, GLsizei totalVertices, bool hasEBO) 
+	  :m_tag(tag),m_totalVertices(totalVertices),m_hasEBO(hasEBO)
 {
-	m_VAO = 0;
-	m_EBO = 0;
-	m_tag = tag;
-	m_hasEBO = hasEBO;
-	m_totalVertices = totalVertices;
-
 	for (auto& ID : m_VBOs)
 	{
 		ID = 0;
 	}
-
 	if (totalVertices > 0)
 	{
 		assert(s_buffers.find(tag) == s_buffers.end());
-
 		glGenVertexArrays(1, &m_VAO);
-		glGenBuffers(4, m_VBOs);
-
+		glGenBuffers(4, m_VBOs.data());
 		if (hasEBO)
 		{
 			glGenBuffers(1, &m_EBO);
 		}
-
 		s_buffers[tag] = *this;
 	}
-
 	else if (!tag.empty())
 	{
 		SetBuffer(tag);
@@ -152,10 +137,8 @@ void Buffer::LinkVBO(GLint attributeID, VBO vbo, ComponentSize componentSize, Da
 
 	glBindVertexArray(m_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[static_cast<int>(vbo)]);
-
 	glVertexAttribPointer(attributeID, static_cast<GLint>(componentSize),
 		static_cast<GLenum>(dataType), GL_FALSE, 0, nullptr);
-
 	glEnableVertexAttribArray(attributeID);
 	glBindVertexArray(0);
 }
@@ -165,7 +148,6 @@ void Buffer::Render(RenderMode renderMode, GLuint index, GLuint totalRenderVerti
 	assert(!m_tag.empty());
 
 	glBindVertexArray(m_VAO);
-
 	if (m_hasEBO)
 	{
 		if (index > 0)
@@ -173,18 +155,15 @@ void Buffer::Render(RenderMode renderMode, GLuint index, GLuint totalRenderVerti
 			glDrawElements(static_cast<GLenum>(renderMode),
 				totalRenderVertices, GL_UNSIGNED_INT, (const void*)(index));
 		}
-
 		else
 		{
 			glDrawElements(static_cast<GLenum>(renderMode),
 				m_totalVertices, GL_UNSIGNED_INT, (const void*)(nullptr));
 		}
 	}
-
 	else
 	{
 		glDrawArrays(static_cast<GLenum>(renderMode), 0, m_totalVertices);
 	}
-
 	glBindVertexArray(0);
 }

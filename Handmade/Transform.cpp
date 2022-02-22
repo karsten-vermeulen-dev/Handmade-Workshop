@@ -3,13 +3,7 @@
 
 //======================================================================================================
 Transform::Transform(const glm::mat4& matrix)
-{
-	m_isDirty = false;
-	m_matrix = matrix;
-	m_scale = glm::vec3(1.0f);
-	m_position = glm::vec3(0.0f);
-	m_rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-}
+		  :m_matrix(matrix){}
 //======================================================================================================
 glm::vec3 Transform::GetEulerAngles()
 {

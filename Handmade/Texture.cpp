@@ -25,7 +25,6 @@ bool Texture::Load(const std::string& tag, const std::string& filename)
 			"that the filename and/or path are incorrectly spelt.", Utility::Severity::Failure);
 		return false;
 	}
-
 	//This is all the raw image data 
 	auto width = textureData->w;
 	auto height = textureData->h;
@@ -64,7 +63,6 @@ void Texture::Unload(const std::string& tag)
 		glDeleteTextures(1, &it->second.m_ID);
 		s_textures.erase(it);
 	}
-
 	else
 	{
 		for (auto& texture : s_textures)
@@ -82,15 +80,13 @@ void Texture::SetRootFolder(const std::string& rootFolder)
 }
 //======================================================================================================
 Texture::Texture(const std::string& tag, const std::string& filename)
+		:m_tag(tag)
 {
-	m_ID = 0;
-
 	if (!filename.empty())
 	{
 		Load(tag, filename);
 		SetTexture(tag);
 	}
-
 	else if (!tag.empty())
 	{
 		SetTexture(tag);
