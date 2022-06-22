@@ -9,7 +9,7 @@ int Circle::GetTotalCircles()
 //======================================================================================================
 Circle::Circle(const std::string& tag,
 	GLfloat radius, GLuint slices, GLfloat r, GLfloat g, GLfloat b, GLfloat a)
-	: Object(tag), m_slices(slices), m_radius(radius), m_buffer(tag, slices + 1)
+	: Object(tag), m_slices(slices), m_radius(radius), m_buffer(tag, slices + 2)
 {
 	s_totalCircles++;
 	m_color = glm::vec4(r, g, b, a);
@@ -20,10 +20,14 @@ Circle::Circle(const std::string& tag,
 	const auto BYTES_PER_VERTEX = 3 * sizeof(GLfloat);
 	const auto BYTES_PER_COLOR = 4 * sizeof(GLfloat);
 
+	//x amount of slices requires (x + 2) vertices
+	//The starting centre vertex will be vertex #1 
+	//and we add on (x + 1) surrounding vertices
+
 	//We add enough bytes here to accomodate for all the slices
 	//An extra vertex is added to accomodate the middle point
-	const auto TOTAL_BYTES_VERTEX_VBO = (m_slices + 1) * BYTES_PER_VERTEX;
-	const auto TOTAL_BYTES_COLOR_VBO = (m_slices + 1) * BYTES_PER_COLOR;
+	const auto TOTAL_BYTES_VERTEX_VBO = (m_slices + 2) * BYTES_PER_VERTEX;
+	const auto TOTAL_BYTES_COLOR_VBO = (m_slices + 2) * BYTES_PER_COLOR;
 
 	m_buffer.FillVBO(Buffer::VBO::VertexBuffer,
 		nullptr, TOTAL_BYTES_VERTEX_VBO, Buffer::Fill::Ongoing);
@@ -37,12 +41,15 @@ Circle::Circle(const std::string& tag,
 	//vertex point. Set starting vertex to 0, which will be relative to where
 	//the sphere is positioned in client code and set the starting color too
 	glm::vec3 startVertex = glm::vec3(0.0f);
-	glm::vec4 startColor = glm::vec4(1.0f);
+	glm::vec4 startColor = glm::vec4(r, g, b, a);
 
 	m_buffer.AppendVBO(Buffer::VBO::VertexBuffer,
 		&startVertex.x, BYTES_PER_VERTEX, offsetVertex);
 	m_buffer.AppendVBO(Buffer::VBO::ColorBuffer,
 		&startColor.r, BYTES_PER_COLOR, offsetColor);
+
+	offsetVertex += BYTES_PER_VERTEX;
+	offsetColor += BYTES_PER_COLOR;
 
 	//Loop through the amount of slices passed and add an extra slice into 
 	//the loop to close the sphere off. The loop will use sin and cos internally
