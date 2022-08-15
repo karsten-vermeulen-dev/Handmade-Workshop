@@ -152,10 +152,11 @@ void Material::Unload(const std::string& tag)
 
 		for (const auto& material : it->second)
 		{
-			Texture::Unload(material.GetAmbientMap().GetTag());
-			Texture::Unload(material.GetDiffuseMap().GetTag());
-			Texture::Unload(material.GetSpecularMap().GetTag());
-			Texture::Unload(material.GetNormalMap().GetTag());
+			//TODO - Find a different way to unload the textures
+			//Texture::Unload(material.GetAmbientMap().GetTag());
+			//Texture::Unload(material.GetDiffuseMap().GetTag());
+			//Texture::Unload(material.GetSpecularMap().GetTag());
+			//Texture::Unload(material.GetNormalMap().GetTag());
 		}
 
 		materialGroups.erase(it);
@@ -167,10 +168,11 @@ void Material::Unload(const std::string& tag)
 		{
 			for (const auto& mat : material.second)
 			{
-				Texture::Unload(mat.GetAmbientMap().GetTag());
-				Texture::Unload(mat.GetDiffuseMap().GetTag());
-				Texture::Unload(mat.GetSpecularMap().GetTag());
-				Texture::Unload(mat.GetNormalMap().GetTag());
+				//TODO - Find a different way to unload the textures
+				//Texture::Unload(mat.GetAmbientMap().GetTag());
+				//Texture::Unload(mat.GetDiffuseMap().GetTag());
+				//Texture::Unload(mat.GetSpecularMap().GetTag());
+				//Texture::Unload(mat.GetNormalMap().GetTag());
 			}
 		}
 
