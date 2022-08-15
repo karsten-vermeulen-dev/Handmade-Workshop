@@ -42,13 +42,12 @@ public:
 	static void Shutdown();
 	static void Update();
 
+	Audio(Type type = Type::Music, const std::string& tag = "",
+		const std::string& filename = "");
+
 	bool Load(Type type, const std::string& tag,
 		const std::string& filename);
 	void Unload(const std::string& tag = "");
-
-	Audio(Type type = Type::Music, const std::string& tag = "",
-		const std::string& filename = "");
-	~Audio() {}
 
 	float GetPan() const;
 	float GetVolume() const;

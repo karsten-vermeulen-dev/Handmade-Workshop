@@ -34,6 +34,20 @@ void Audio::Update()
 	audioSystem->update();
 }
 //======================================================================================================
+Audio::Audio(Type type, const std::string& tag, const std::string& filename) : type(type)
+{
+	if (!filename.empty())
+	{
+		Load(type, tag, filename);
+		SetAudio(tag, type);
+	}
+
+	else if (!tag.empty())
+	{
+		SetAudio(tag, type);
+	}
+}
+//======================================================================================================
 bool Audio::Load(Type type, const std::string& tag, const std::string& filename)
 {
 	FMOD::Sound* audio = nullptr;
@@ -112,20 +126,6 @@ void Audio::Unload(const std::string& tag)
 
 		music.clear();
 		sounds.clear();
-	}
-}
-//======================================================================================================
-Audio::Audio(Type type, const std::string& tag, const std::string& filename) : type(type)
-{
-	if (!filename.empty())
-	{
-		Load(type, tag, filename);
-		SetAudio(tag, type);
-	}
-
-	else if (!tag.empty())
-	{
-		SetAudio(tag, type);
 	}
 }
 //======================================================================================================
