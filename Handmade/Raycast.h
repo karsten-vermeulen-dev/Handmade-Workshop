@@ -6,8 +6,6 @@ class Raycast
 {
 public:
 
-	Raycast();
-
 	const glm::vec3& GetOrigin() const;
 	const glm::vec3& GetDirection() const;
 
@@ -19,7 +17,7 @@ public:
 
 private:
 
-	glm::vec3 m_origin{ 0.0f };
-	glm::vec3 m_direction{ 0.0f };
+	glm::vec3 origin{ 0.0f };
+	glm::vec3 direction{ 0.0f };
 
 };

@@ -4,41 +4,39 @@
 #include "SphereCollider.h"
 
 //======================================================================================================
-LineSegment::LineSegment() {}
-//======================================================================================================
 void LineSegment::SetScale(GLfloat scale)
 {
-	m_scale = scale;
+	this->scale = scale;
 }
 //======================================================================================================
 void LineSegment::SetStartPoint(const glm::vec3& startPoint)
 {
-	m_startPoint = startPoint;
+	this->startPoint = startPoint;
 }
 //======================================================================================================
 void LineSegment::SetStartPoint(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_startPoint.x = x;
-	m_startPoint.y = y;
-	m_startPoint.z = z;
+	startPoint.x = x;
+	startPoint.y = y;
+	startPoint.z = z;
 }
 //======================================================================================================
 void LineSegment::SetEndPoint(const glm::vec3& endPoint)
 {
-	m_endPoint = endPoint;
+	this->endPoint = endPoint;
 }
 //======================================================================================================
 void LineSegment::SetEndPoint(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_endPoint.x = x;
-	m_endPoint.y = y;
-	m_endPoint.z = z;
+	endPoint.x = x;
+	endPoint.y = y;
+	endPoint.z = z;
 }
 //======================================================================================================
 bool LineSegment::IsColliding(const SphereCollider& secondSphere) const
 {
 	//TODO - Should the radius not be scaled?
-	return (glm::length(secondSphere.GetPosition() - PointOnLine(secondSphere.GetPosition())) <= 
+	return (glm::length(secondSphere.GetPosition() - PointOnLine(secondSphere.GetPosition())) <=
 		secondSphere.GetRadius());
 }
 //======================================================================================================
@@ -57,11 +55,11 @@ glm::vec3 LineSegment::PointOnLine(const glm::vec3& point) const
 //======================================================================================================
 glm::vec3 LineSegment::PointOnLine(GLfloat x, GLfloat y, GLfloat z) const
 {
-	auto lineSegment = m_endPoint - m_startPoint;
+	auto lineSegment = endPoint - startPoint;
 	assert(lineSegment != glm::vec3(0.0f));
 
-	auto dot = glm::dot(lineSegment, 
-		(glm::vec3(x, y, z) - m_startPoint)) / glm::dot(lineSegment, lineSegment);
+	auto dot = glm::dot(lineSegment,
+		(glm::vec3(x, y, z) - startPoint)) / glm::dot(lineSegment, lineSegment);
 
 	//Either the point is on either end of the 
 	//line segment or its a value between 0 and 1 
@@ -69,16 +67,16 @@ glm::vec3 LineSegment::PointOnLine(GLfloat x, GLfloat y, GLfloat z) const
 
 	if (dot <= 0.0f)
 	{
-		return m_startPoint;
+		return startPoint;
 	}
 
 	else if (dot >= 1.0f)
 	{
-		return m_endPoint;
+		return endPoint;
 	}
 
 	else
 	{
-		return (m_startPoint + dot * lineSegment);
+		return (startPoint + dot * lineSegment);
 	}
 }

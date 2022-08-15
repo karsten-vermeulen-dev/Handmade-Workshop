@@ -33,10 +33,11 @@ public:
 
 private:
 
-	GLfloat m_scale{ 1.0f };
-	GLfloat m_radius{ 1.0f };
-	GLfloat m_radiusScaled{ 1.0f };
-	glm::vec3 m_position{ 0.0f };
-	glm::vec4 m_color{ 0.0f, 1.0f, 0.0f, 0.4f };
+	GLfloat scale{ 1.0f };
+	GLfloat radius{ 1.0f };
+	GLfloat radiusScaled{ 1.0f };
+	
+	glm::vec3 position{ 0.0f };
+	glm::vec4 color{ 0.0f, 1.0f, 0.0f, 0.4f };
 
 };

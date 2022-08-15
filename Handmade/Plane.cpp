@@ -1,8 +1,6 @@
 #include "Plane.h"
 
 //======================================================================================================
-Plane::Plane() {}
-//======================================================================================================
 void Plane::SetPoint1(const glm::vec3& point1)
 {
 	SetPoint1(point1.x, point1.y, point1.z);
@@ -10,9 +8,9 @@ void Plane::SetPoint1(const glm::vec3& point1)
 //======================================================================================================
 void Plane::SetPoint1(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_planePoints.point1.x = x;
-	m_planePoints.point1.y = y;
-	m_planePoints.point1.z = z;
+	planePoints.point1.x = x;
+	planePoints.point1.y = y;
+	planePoints.point1.z = z;
 }
 //======================================================================================================
 void Plane::SetPoint2(const glm::vec3& point2)
@@ -22,9 +20,9 @@ void Plane::SetPoint2(const glm::vec3& point2)
 //======================================================================================================
 void Plane::SetPoint2(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_planePoints.point2.x = x;
-	m_planePoints.point2.y = y;
-	m_planePoints.point2.z = z;
+	planePoints.point2.x = x;
+	planePoints.point2.y = y;
+	planePoints.point2.z = z;
 }
 //======================================================================================================
 void Plane::SetPoint3(const glm::vec3& point3)
@@ -34,9 +32,9 @@ void Plane::SetPoint3(const glm::vec3& point3)
 //======================================================================================================
 void Plane::SetPoint3(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_planePoints.point3.x = x;
-	m_planePoints.point3.y = y;
-	m_planePoints.point3.z = z;
+	planePoints.point3.x = x;
+	planePoints.point3.y = y;
+	planePoints.point3.z = z;
 }
 //======================================================================================================
 void Plane::SetPoint4(const glm::vec3& point4)
@@ -46,21 +44,21 @@ void Plane::SetPoint4(const glm::vec3& point4)
 //======================================================================================================
 void Plane::SetPoint4(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_planePoints.point4.x = x;
-	m_planePoints.point4.y = y;
-	m_planePoints.point4.z = z;
+	planePoints.point4.x = x;
+	planePoints.point4.y = y;
+	planePoints.point4.z = z;
 }
 //======================================================================================================
 void Plane::SetPosition(const glm::vec3& position)
 {
-	m_position = position;
+	this->position = position;
 }
 //======================================================================================================
 void Plane::SetPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_position.x = x;
-	m_position.y = y;
-	m_position.z = z;
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 //======================================================================================================
 bool Plane::IsColliding(const SphereCollider& secondSphere) const
@@ -105,14 +103,14 @@ GLfloat Plane::DistanceFromPlane(const glm::vec3& point) const
 //======================================================================================================
 GLfloat Plane::DistanceFromPlane(GLfloat x, GLfloat y, GLfloat z) const
 {
-	return glm::dot(m_normal, glm::vec3(x, y, z)) - m_distanceFromOrigin;
+	return glm::dot(normal, glm::vec3(x, y, z)) - distanceFromOrigin;
 }
 //======================================================================================================
 void Plane::Update()
 {
-	glm::vec3 edge1 = m_planePoints.point1 - m_planePoints.point2;
-	glm::vec3 edge2 = m_planePoints.point3 - m_planePoints.point2;
+	glm::vec3 edge1 = planePoints.point1 - planePoints.point2;
+	glm::vec3 edge2 = planePoints.point3 - planePoints.point2;
 
-	m_normal = glm::normalize(glm::cross(edge1, edge2));
-	m_distanceFromOrigin = glm::dot(m_normal, m_planePoints.point1);
+	normal = glm::normalize(glm::cross(edge1, edge2));
+	distanceFromOrigin = glm::dot(normal, planePoints.point1);
 }

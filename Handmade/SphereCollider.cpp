@@ -6,44 +6,44 @@ SphereCollider::SphereCollider() {}
 //======================================================================================================
 float SphereCollider::GetScale() const
 {
-	return m_scale;
+	return scale;
 }
 //======================================================================================================
 float SphereCollider::GetRadius() const
 {
-	return m_radius;
+	return radius;
 }
 //======================================================================================================
 float SphereCollider::GetRadiusScaled() const
 {
-	return m_radiusScaled;
+	return radiusScaled;
 }
 //======================================================================================================
 const glm::vec3& SphereCollider::GetPosition() const
 {
-	return m_position;
+	return position;
 }
 //======================================================================================================
 void SphereCollider::SetScale(GLfloat scale)
 {
-	m_scale = scale;
+	this->scale = scale;
 }
 //======================================================================================================
 void SphereCollider::SetRadius(GLfloat radius)
 {
-	m_radius = radius;
+	this->radius = radius;
 }
 //======================================================================================================
 void SphereCollider::SetPosition(const glm::vec3& position)
 {
-	m_position = position;
+	this->position = position;
 }
 //======================================================================================================
 void SphereCollider::SetPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_position.x = x;
-	m_position.y = y;
-	m_position.z = z;
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 //======================================================================================================
 bool SphereCollider::IsColliding(const BoxCollider& secondBox) const
@@ -58,11 +58,11 @@ bool SphereCollider::IsColliding(const LineSegment& secondLine) const
 //======================================================================================================
 bool SphereCollider::IsColliding(const SphereCollider& secondSphere) const
 {
-	return (glm::length(m_position - secondSphere.m_position) <=
-		(m_radius + secondSphere.m_radius));
+	return (glm::length(position - secondSphere.position) <=
+		(radius + secondSphere.radius));
 }
 //======================================================================================================
 void SphereCollider::Update()
 {
-	m_radiusScaled = m_radius * m_scale;
+	radiusScaled = radius * scale;
 }

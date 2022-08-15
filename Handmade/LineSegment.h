@@ -10,8 +10,6 @@ class LineSegment
 
 public:
 
-	LineSegment();
-
 	void SetScale(GLfloat scale);
 
 	void SetStartPoint(const glm::vec3& startPoint);
@@ -31,9 +29,9 @@ public:
 
 private:
 
-	GLfloat m_scale{ 1.0f };
-	glm::vec3 m_endPoint{ 0.0f };
-	glm::vec3 m_startPoint{ 0.0f };
-	glm::vec4 m_color{ 1.0f, 0.0f, 1.0f, 1.0f };
+	GLfloat scale{ 1.0f };
+	glm::vec3 endPoint{ 0.0f };
+	glm::vec3 startPoint{ 0.0f };
+	glm::vec4 color{ 1.0f, 0.0f, 1.0f, 1.0f };
 
 };

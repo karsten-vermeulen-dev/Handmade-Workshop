@@ -24,8 +24,6 @@ public:
 		Negative
 	};
 
-	Plane();
-
 	void SetPoint1(const glm::vec3& point1);
 	void SetPoint1(GLfloat x, GLfloat y, GLfloat z);
 
@@ -55,11 +53,11 @@ public:
 
 private:
 
-	PlanePoints m_planePoints;
-	GLfloat m_distanceFromOrigin{ 0.0f };
+	PlanePoints planePoints;
+	GLfloat distanceFromOrigin{ 0.0f };
 	
-	glm::vec3 m_normal{ 0.0f };
-	glm::vec3 m_position{ 0.0f };
-	glm::vec4 m_color{ 0.0f, 0.0f, 1.0f, 1.0f };
+	glm::vec3 normal{ 0.0f };
+	glm::vec3 position{ 0.0f };
+	glm::vec4 color{ 0.0f, 0.0f, 1.0f, 1.0f };
 
 };

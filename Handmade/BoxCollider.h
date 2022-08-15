@@ -12,8 +12,6 @@ class BoxCollider
 
 public:
 
-	BoxCollider();
-
 	const glm::vec3& GetScale() const;
 	const glm::vec3& GetPosition() const;
 	const glm::vec3& GetDimension() const;
@@ -42,12 +40,12 @@ public:
 
 private:
 
-	glm::vec3 m_min{ 0.0f };
-	glm::vec3 m_max{ 0.0f };
-	glm::vec3 m_scale{ 1.0f };
-	glm::vec3 m_position{ 0.0f };
-	glm::vec3 m_dimension{ 1.0f };
-	glm::vec3 m_halfDimension{ 0.0f };
-	glm::vec4 m_color{ 1.0f, 0.0f, 0.0f, 0.4f };
+	glm::vec3 min{ 0.0f };
+	glm::vec3 max{ 0.0f };
+	glm::vec3 scale{ 1.0f };
+	glm::vec3 position{ 0.0f };
+	glm::vec3 dimension{ 1.0f };
+	glm::vec3 halfDimension{ 0.0f };
+	glm::vec4 color{ 1.0f, 0.0f, 0.0f, 0.4f };
 
 };

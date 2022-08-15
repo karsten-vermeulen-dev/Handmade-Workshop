@@ -4,57 +4,55 @@
 #include "SphereCollider.h"
 
 //======================================================================================================
-BoxCollider::BoxCollider() {}
-//======================================================================================================
 const glm::vec3& BoxCollider::GetScale() const
 {
-	return m_scale;
+	return scale;
 }
 //======================================================================================================
 const glm::vec3& BoxCollider::GetPosition() const
 {
-	return m_position;
+	return position;
 }
 //======================================================================================================
 const glm::vec3& BoxCollider::GetDimension() const
 {
-	return m_dimension;
+	return dimension;
 }
 //======================================================================================================
 void BoxCollider::SetScale(const glm::vec3& scale)
 {
-	m_scale = scale;
+	this->scale = scale;
 }
 //======================================================================================================--
 void BoxCollider::SetScale(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_scale.x = x;
-	m_scale.y = y;
-	m_scale.z = z;
+	scale.x = x;
+	scale.y = y;
+	scale.z = z;
 }
 //======================================================================================================
 void BoxCollider::SetPosition(const glm::vec3& position)
 {
-	m_position = position;
+	this->position = position;
 }
 //======================================================================================================
 void BoxCollider::SetPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_position.x = x;
-	m_position.y = y;
-	m_position.z = z;
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 //======================================================================================================
 void BoxCollider::SetDimension(const glm::vec3& dimension)
 {
-	m_dimension = dimension;
+	this->dimension = dimension;
 }
 //======================================================================================================
 void BoxCollider::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 {
-	m_dimension.x = width;
-	m_dimension.y = height;
-	m_dimension.z = depth;
+	dimension.x = width;
+	dimension.y = height;
+	dimension.z = depth;
 }
 //======================================================================================================
 bool BoxCollider::IsColliding(const glm::vec3& point) const
@@ -64,9 +62,9 @@ bool BoxCollider::IsColliding(const glm::vec3& point) const
 //======================================================================================================
 bool BoxCollider::IsColliding(GLfloat x, GLfloat y, GLfloat z) const
 {
-	return ((x >= m_min.x && x <= m_max.x) &&
-		(y >= m_min.y && y <= m_max.y) &&
-		(z >= m_min.z && z <= m_max.z));
+	return ((x >= min.x && x <= max.x) &&
+		(y >= min.y && y <= max.y) &&
+		(z >= min.z && z <= max.z));
 }
 //======================================================================================================
 bool BoxCollider::IsColliding(const OBBCollider& secondBox) const
@@ -76,9 +74,9 @@ bool BoxCollider::IsColliding(const OBBCollider& secondBox) const
 //======================================================================================================
 bool BoxCollider::IsColliding(const BoxCollider& secondBox) const
 {
-	return ((m_max.x >= secondBox.m_min.x && secondBox.m_max.x >= m_min.x) &&
-		(m_max.y >= secondBox.m_min.y && secondBox.m_max.y >= m_min.y) &&
-		(m_max.z >= secondBox.m_min.z && secondBox.m_max.z >= m_min.z));
+	return ((max.x >= secondBox.min.x && secondBox.max.x >= min.x) &&
+		(max.y >= secondBox.min.y && secondBox.max.y >= min.y) &&
+		(max.z >= secondBox.min.z && secondBox.max.z >= min.z));
 }
 //======================================================================================================
 bool BoxCollider::IsColliding(const SphereCollider& secondSphere) const
@@ -94,18 +92,18 @@ glm::vec3 BoxCollider::PointOnBox(const glm::vec3& point) const
 //======================================================================================================
 glm::vec3 BoxCollider::PointOnBox(GLfloat x, GLfloat y, GLfloat z) const
 {
-	return m_position -
-		glm::clamp((m_position - glm::vec3(x, y, z)), -m_halfDimension, m_halfDimension);
+	return position -
+		glm::clamp((position - glm::vec3(x, y, z)), -halfDimension, halfDimension);
 }
 //======================================================================================================
 void BoxCollider::Update()
 {
-	m_halfDimension = m_dimension * m_scale * 0.5f;
+	halfDimension = dimension * scale * 0.5f;
 
-	m_min.x = m_position.x - m_halfDimension.x;
-	m_min.y = m_position.y - m_halfDimension.y;
-	m_min.z = m_position.z - m_halfDimension.z;
-	m_max.x = m_position.x + m_halfDimension.x;
-	m_max.y = m_position.y + m_halfDimension.y;
-	m_max.z = m_position.z + m_halfDimension.z;
+	min.x = position.x - halfDimension.x;
+	min.y = position.y - halfDimension.y;
+	min.z = position.z - halfDimension.z;
+	max.x = position.x + halfDimension.x;
+	max.y = position.y + halfDimension.y;
+	max.z = position.z + halfDimension.z;
 }

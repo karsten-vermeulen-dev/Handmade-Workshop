@@ -2,77 +2,75 @@
 #include "OBBCollider.h"
 
 //======================================================================================================
-OBBCollider::OBBCollider() {}
-//======================================================================================================
 const glm::vec3& OBBCollider::GetScale() const
 {
-	return m_scale;
+	return scale;
 }
 //======================================================================================================
 const glm::vec3& OBBCollider::GetPosition() const
 {
-	return m_position;
+	return position;
 }
 //======================================================================================================
 const glm::quat& OBBCollider::GetRotation() const
 {
-	return m_rotation;
+	return rotation;
 }
 //======================================================================================================
 const glm::vec3& OBBCollider::GetDimension() const
 {
-	return m_dimension;
+	return dimension;
 }
 //======================================================================================================
 void OBBCollider::SetScale(const glm::vec3& scale)
 {
-	m_scale = scale;
+	this->scale = scale;
 }
 //======================================================================================================
 void OBBCollider::SetScale(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_scale.x = x;
-	m_scale.y = y;
-	m_scale.z = z;
+	scale.x = x;
+	scale.y = y;
+	scale.z = z;
 }
 //======================================================================================================
 void OBBCollider::SetPosition(const glm::vec3& position)
 {
-	m_position = position;
+	this->position = position;
 }
 //======================================================================================================
 void OBBCollider::SetPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_position.x = x;
-	m_position.y = y;
-	m_position.z = z;
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 //======================================================================================================
 void OBBCollider::SetRotation(const glm::quat& rotation)
 {
-	m_rotation = rotation;
+	this->rotation = rotation;
 }
 //======================================================================================================
 void OBBCollider::SetRotation(const glm::vec3& eulerAngles)
 {
-	m_rotation = glm::quat(glm::radians(eulerAngles));
+	rotation = glm::quat(glm::radians(eulerAngles));
 }
 //======================================================================================================
 void OBBCollider::SetRotation(GLfloat pitch, GLfloat yaw, GLfloat roll)
 {
-	m_rotation = glm::quat(glm::radians(glm::vec3(pitch, yaw, roll)));
+	rotation = glm::quat(glm::radians(glm::vec3(pitch, yaw, roll)));
 }
 //======================================================================================================
 void OBBCollider::SetDimension(const glm::vec3& dimension)
 {
-	m_dimension = dimension;
+	this->dimension = dimension;
 }
 //======================================================================================================
 void OBBCollider::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 {
-	m_dimension.x = width;
-	m_dimension.y = height;
-	m_dimension.z = depth;
+	dimension.x = width;
+	dimension.y = height;
+	dimension.z = depth;
 }
 //======================================================================================================
 bool OBBCollider::IsColliding(const OBBCollider& secondBox) const
@@ -82,25 +80,25 @@ bool OBBCollider::IsColliding(const OBBCollider& secondBox) const
 	//Here we have considered the extra nine axes needed to find the disjoint (if any)
 	glm::vec3 axes[15];
 
-	axes[0] = m_rightAxis;
-	axes[1] = m_upAxis;
-	axes[2] = m_forwardAxis;
+	axes[0] = rightAxis;
+	axes[1] = upAxis;
+	axes[2] = forwardAxis;
 
-	axes[3] = secondBox.m_rightAxis;
-	axes[4] = secondBox.m_upAxis;
-	axes[5] = secondBox.m_forwardAxis;
+	axes[3] = secondBox.rightAxis;
+	axes[4] = secondBox.upAxis;
+	axes[5] = secondBox.forwardAxis;
 
-	axes[6] = glm::cross(m_rightAxis, secondBox.m_rightAxis);
-	axes[7] = glm::cross(m_rightAxis, secondBox.m_upAxis);
-	axes[8] = glm::cross(m_rightAxis, secondBox.m_forwardAxis);
+	axes[6] = glm::cross(rightAxis, secondBox.rightAxis);
+	axes[7] = glm::cross(rightAxis, secondBox.upAxis);
+	axes[8] = glm::cross(rightAxis, secondBox.forwardAxis);
 
-	axes[9] = glm::cross(m_upAxis, secondBox.m_rightAxis);
-	axes[10] = glm::cross(m_upAxis, secondBox.m_upAxis);
-	axes[11] = glm::cross(m_upAxis, secondBox.m_forwardAxis);
+	axes[9] = glm::cross(upAxis, secondBox.rightAxis);
+	axes[10] = glm::cross(upAxis, secondBox.upAxis);
+	axes[11] = glm::cross(upAxis, secondBox.forwardAxis);
 
-	axes[12] = glm::cross(m_forwardAxis, secondBox.m_rightAxis);
-	axes[13] = glm::cross(m_forwardAxis, secondBox.m_upAxis);
-	axes[14] = glm::cross(m_forwardAxis, secondBox.m_forwardAxis);
+	axes[12] = glm::cross(forwardAxis, secondBox.rightAxis);
+	axes[13] = glm::cross(forwardAxis, secondBox.upAxis);
+	axes[14] = glm::cross(forwardAxis, secondBox.forwardAxis);
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -112,8 +110,8 @@ bool OBBCollider::IsColliding(const OBBCollider& secondBox) const
 		//Reset the min and max extent values each time a new axis is tested
 		//Set both min and max to the first projected corner of each box
 		glm::vec2 extents[2];
-		extents[0].x = extents[0].y = glm::dot(m_corners[0], glm::normalize(axes[i]));
-		extents[1].x = extents[1].y = glm::dot(secondBox.m_corners[0], glm::normalize(axes[i]));
+		extents[0].x = extents[0].y = glm::dot(corners[0], glm::normalize(axes[i]));
+		extents[1].x = extents[1].y = glm::dot(secondBox.corners[0], glm::normalize(axes[i]));
 
 		//Add both potentially colliding boxes into a temporary array
 		//so that we can use the array when looping through both boxes
@@ -128,7 +126,7 @@ bool OBBCollider::IsColliding(const OBBCollider& secondBox) const
 			for (int k = 0; k < 8; k++)
 			{
 				//Project each box's corner onto the current active axis
-				GLfloat projection = glm::dot(colliders[j].m_corners[k], glm::normalize(axes[i]));
+				GLfloat projection = glm::dot(colliders[j].corners[k], glm::normalize(axes[i]));
 
 				//Find the min and max extent values for each box
 				extents[j].x = std::min(projection, extents[j].x);
@@ -174,8 +172,8 @@ glm::vec3 OBBCollider::PointOnBox(const glm::vec3& point) const
 //======================================================================================================
 glm::vec3 OBBCollider::PointOnBox(GLfloat x, GLfloat y, GLfloat z) const
 {
-	glm::vec3 axes[3] = { m_rightAxis, m_upAxis, m_forwardAxis };
-	glm::vec3 distanceFromObject = glm::vec3(x, y, z) - m_position;
+	glm::vec3 axes[3] = { rightAxis, upAxis, forwardAxis };
+	glm::vec3 distanceFromObject = glm::vec3(x, y, z) - position;
 
 	//Loop through all three axes and project
 	//the distance vector onto current axis
@@ -186,46 +184,46 @@ glm::vec3 OBBCollider::PointOnBox(GLfloat x, GLfloat y, GLfloat z) const
 	{
 		normalizedAxis[i] = glm::normalize(axes[i]);
 		GLfloat projection = glm::dot(distanceFromObject, normalizedAxis[i]);
-		clamp[i] = glm::clamp(projection, -m_halfDimension[i], m_halfDimension[i]);
+		clamp[i] = glm::clamp(projection, -halfDimension[i], halfDimension[i]);
 	}
 
 	//The clamp values are used together with the axes to determine the exact
 	//point on the edge of the box that lines up with the passed position point
-	return m_position + (normalizedAxis[0] * clamp[0])
+	return    position + (normalizedAxis[0] * clamp[0])
 		+ (normalizedAxis[1] * clamp[1])
 		+ (normalizedAxis[2] * clamp[2]);
 }
 //======================================================================================================
 void OBBCollider::Update()
 {
-	m_halfDimension = m_dimension * m_scale * 0.5f;
+	halfDimension = dimension * scale * 0.5f;
 
 	//Use the up, right and forward vector to calculate box's corners 
 	//below and to create projection vectors to project onto later on
 	//We have to reset them to their defaults before rotating them
-	m_upAxis = glm::vec3(0.0f, 1.0f, 0.0f);
-	m_rightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-	m_forwardAxis = glm::vec3(0.0f, 0.0f, -1.0f);
+	upAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+	rightAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+	forwardAxis = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	//Transform the up, right and forward vectors based on how the OBB is rotated 
-	glm::vec3 upAxis = m_rotation * m_upAxis * m_halfDimension.y;
-	glm::vec3 rightAxis = m_rotation * m_rightAxis * m_halfDimension.x;
-	glm::vec3 forwardAxis = m_rotation * m_forwardAxis * m_halfDimension.z;
+	glm::vec3 upAxis = rotation * upAxis * halfDimension.y;
+	glm::vec3 rightAxis = rotation * rightAxis * halfDimension.x;
+	glm::vec3 forwardAxis = rotation * forwardAxis * halfDimension.z;
 
 	//Calculate all eight corners of the box based on bound's centre 
 	//position, starting in the top left corner and moving clockwise
 
 	//Front face
-	m_corners[0] = m_position - m_rightAxis + m_upAxis - m_forwardAxis;
-	m_corners[1] = m_position + m_rightAxis + m_upAxis - m_forwardAxis;
-	m_corners[2] = m_position + m_rightAxis - m_upAxis - m_forwardAxis;
-	m_corners[3] = m_position - m_rightAxis - m_upAxis - m_forwardAxis;
+	corners[0] = position - rightAxis + upAxis - forwardAxis;
+	corners[1] = position + rightAxis + upAxis - forwardAxis;
+	corners[2] = position + rightAxis - upAxis - forwardAxis;
+	corners[3] = position - rightAxis - upAxis - forwardAxis;
 
 	//Back face
-	m_corners[4] = m_position - m_rightAxis + m_upAxis + m_forwardAxis;
-	m_corners[5] = m_position + m_rightAxis + m_upAxis + m_forwardAxis;
-	m_corners[6] = m_position + m_rightAxis - m_upAxis + m_forwardAxis;
-	m_corners[7] = m_position - m_rightAxis - m_upAxis + m_forwardAxis;
+	corners[4] = position - rightAxis + upAxis + forwardAxis;
+	corners[5] = position + rightAxis + upAxis + forwardAxis;
+	corners[6] = position + rightAxis - upAxis + forwardAxis;
+	corners[7] = position - rightAxis - upAxis + forwardAxis;
 }
 
 //======================================================================================================
@@ -240,23 +238,23 @@ void OBBCollider::Update()
 //	glm::vec2 tempAxis[4];
 //	glm::vec2 normalizedAxis;
 //
-//	tempAxis[0] = tempBoxes[0].m_rightAxis;
-//	tempAxis[1] = tempBoxes[0].m_upAxis;
-//	tempAxis[2] = tempBoxes[1].m_rightAxis;
-//	tempAxis[3] = tempBoxes[1].m_upAxis;
+//	tempAxis[0] = tempBoxes[0].   rightAxis;
+//	tempAxis[1] = tempBoxes[0].   upAxis;
+//	tempAxis[2] = tempBoxes[1].   rightAxis;
+//	tempAxis[3] = tempBoxes[1].   upAxis;
 //
 //	for (int i = 0; i < 4; i++)
 //	{
 //		normalizedAxis = glm::normalize(tempAxis[i]);
 //
-//		extentMin[0] = extentMax[0] = glm::dot(tempBoxes[0].m_corners[0], normalizedAxis);
-//		extentMin[1] = extentMax[1] = glm::dot(tempBoxes[1].m_corners[0], normalizedAxis);
+//		extentMin[0] = extentMax[0] = glm::dot(tempBoxes[0].   corners[0], normalizedAxis);
+//		extentMin[1] = extentMax[1] = glm::dot(tempBoxes[1].   corners[0], normalizedAxis);
 //
 //		for (int j = 0; j < 2; j++)
 //		{
 //			for (int k = 0; k < 4; k++)
 //			{
-//				projection = glm::dot(tempBoxes[j].m_corners[k], normalizedAxis);
+//				projection = glm::dot(tempBoxes[j].   corners[k], normalizedAxis);
 //				extentMin[j] = std::min(projection, extentMin[j]);
 //				extentMax[j] = std::max(projection, extentMax[j]);
 //			}

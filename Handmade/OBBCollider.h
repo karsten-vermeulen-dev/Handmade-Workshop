@@ -11,8 +11,6 @@ class OBBCollider
 
 public:
 
-	OBBCollider();
-
 	const glm::vec3& GetScale() const;
 	const glm::vec3& GetPosition() const;
 	const glm::quat& GetRotation() const;
@@ -43,16 +41,16 @@ public:
 
 private:
 
-	glm::vec3 m_upAxis{ 0.0f, 1.0f, 0.0f };
-	glm::vec3 m_rightAxis{ 1.0f, 0.0f, 0.0f };
-	glm::vec3 m_forwardAxis{ 0.0f, 0.0f, -1.0f };
-	std::array<glm::vec3, 8> m_corners{ glm::vec3(0.0f) };
+	glm::vec3 upAxis{ 0.0f, 1.0f, 0.0f };
+	glm::vec3 rightAxis{ 1.0f, 0.0f, 0.0f };
+	glm::vec3 forwardAxis{ 0.0f, 0.0f, -1.0f };
+	std::array<glm::vec3, 8> corners{ glm::vec3(0.0f) };
 
-	glm::vec3 m_scale{ 1.0f };
-	glm::vec3 m_position{ 0.0f };
-	glm::vec3 m_dimension{ 1.0f };
-	glm::vec3 m_halfDimension{ 0.5f };
-	glm::vec4 m_color{ 1.0f, 0.5f, 0.0f, 0.4f };
-	glm::quat m_rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+	glm::vec3 scale{ 1.0f };
+	glm::vec3 position{ 0.0f };
+	glm::vec3 dimension{ 1.0f };
+	glm::vec3 halfDimension{ 0.5f };
+	glm::vec4 color{ 1.0f, 0.5f, 0.0f, 0.4f };
+	glm::quat rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
 };
