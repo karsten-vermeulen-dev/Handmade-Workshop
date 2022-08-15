@@ -12,12 +12,10 @@ class Material
 
 public:
 
-	static bool Load(const std::string& tag, const std::string& filename);
-	static void Unload(const std::string& tag = "");
-	static void SetRootFolder(const std::string& rootFolder);
-
 	Material(const std::string& tag = "", const std::string& filename = "");
-	~Material() {}
+
+	bool Load(const std::string& tag, const std::string& filename);
+	void Unload(const std::string& tag = "");
 
 	const std::string& GetTag() const;
 	const std::string& GetName() const;
@@ -55,30 +53,30 @@ public:
 	void SetTransmittance(const glm::vec3& transmittance);
 	void SetTransmittance(GLfloat r, GLfloat g, GLfloat b);
 
-	void SendToShader(Shader& shader);
+	void SendToShader(Shader& shader) const;
 
 private:
 
-	std::string m_tag;
-	std::string m_name;
-	bool m_isTextured = false;
-	std::vector<Material> m_group;
+	std::string tag;
+	std::string name;
+	bool isTextured{ false };
+	std::vector<Material> group;
 
-	Texture m_normalMap;
-	Texture m_ambientMap;
-	Texture m_diffuseMap;
-	Texture m_specularMap;
+	Texture normalMap;
+	Texture ambientMap;
+	Texture diffuseMap;
+	Texture specularMap;
 
-	GLfloat m_shininess{ 1.0f };
-	GLfloat m_refractiveIndex{ 0.0f };
+	GLfloat shininess{ 1.0f };
+	GLfloat refractiveIndex{ 0.0f };
 
-	glm::vec3 m_ambient{ 0.0f };
-	glm::vec3 m_diffuse{ 0.0f };
-	glm::vec3 m_specular{ 0.0f };
-	glm::vec3 m_emission{ 0.0f };
-	glm::vec3 m_transmittance{ 1.0f };
+	glm::vec3 ambient{ 0.0f };
+	glm::vec3 diffuse{ 0.0f };
+	glm::vec3 specular{ 0.0f };
+	glm::vec3 emission{ 0.0f };
+	glm::vec3 transmittance{ 1.0f };
 
-	static std::string s_rootFolder;
-	static std::map<std::string, std::vector<Material>> s_materialGroups;
+	static std::string rootFolder;
+	static std::map<std::string, std::vector<Material>> materialGroups;
 
 };
