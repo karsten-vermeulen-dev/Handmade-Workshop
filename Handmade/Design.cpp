@@ -111,7 +111,8 @@ bool Design::OnEnter()
 
 	//===================================================================
 
-	Material::Load("Defaults", "Defaults.mtl");
+	//Find a different way to load standard default materials
+	//Material::Load("Defaults", "Defaults.mtl");
 	m_consoleLog.push_front("Default materials loaded.");
 
 	//===================================================================
