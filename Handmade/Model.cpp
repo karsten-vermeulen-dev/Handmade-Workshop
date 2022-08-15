@@ -461,7 +461,9 @@ void Model::Unload(const std::string& tag)
 			Buffer::Destroy(buffer.GetTag());
 		}
 
-		Material::Unload(it->second.m_material.GetTag());
+		//TODO - Find a way to properly unload materials
+		//Material::Unload(it->second.m_material.GetTag());
+
 		s_models.erase(it);
 	}
 
@@ -474,7 +476,8 @@ void Model::Unload(const std::string& tag)
 				Buffer::Destroy(buffer.GetTag());
 			}
 
-			Material::Unload(model.second.m_material.GetTag());
+			//TODO - Find a way to properly unload materials
+			//Material::Unload(model.second.m_material.GetTag());
 		}
 
 		s_models.clear();
