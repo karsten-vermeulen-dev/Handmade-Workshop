@@ -52,11 +52,11 @@ public:
 
 private:
 
-	bool m_isDirty = false;
+	bool isDirty{ false };
 
-	glm::mat4 m_matrix;
-	glm::vec3 m_scale{ 1.0f };
-	glm::vec3 m_position{ 0.0f };
-	glm::quat m_rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+	glm::mat4 matrix{ 1.0f };
+	glm::vec3 scale{ 1.0f };
+	glm::vec3 position{ 0.0f };
+	glm::quat rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
 };

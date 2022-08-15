@@ -2,101 +2,101 @@
 #include "Transform.h"
 
 //======================================================================================================
-Transform::Transform(const glm::mat4& matrix) : m_matrix(matrix) {}
+Transform::Transform(const glm::mat4& matrix) : matrix(matrix) {}
 //======================================================================================================
 glm::vec3 Transform::GetEulerAngles()
 {
-	return glm::degrees(glm::eulerAngles(m_rotation));
+	return glm::degrees(glm::eulerAngles(rotation));
 }
 //======================================================================================================
 const glm::vec3& Transform::GetPosition() const
 {
-	return m_position;
+	return position;
 }
 //======================================================================================================
 const glm::quat& Transform::GetRotation() const
 {
-	return m_rotation;
+	return rotation;
 }
 //======================================================================================================
 const glm::vec3& Transform::GetScale() const
 {
-	return m_scale;
+	return scale;
 }
 //======================================================================================================
 const glm::mat4& Transform::GetMatrix()
 {
 	Update();
-	return m_matrix;
+	return matrix;
 }
 //======================================================================================================
 void Transform::SetIdentity()
 {
-	m_isDirty = false;
-	m_scale = glm::vec3(1.0f);
-	m_matrix = glm::mat4(1.0f);
-	m_position = glm::vec3(0.0f);
-	m_rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	isDirty = false;
+	scale = glm::vec3(1.0f);
+	matrix = glm::mat4(1.0f);
+	position = glm::vec3(0.0f);
+	rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 //======================================================================================================
 void Transform::SetPosition(const glm::vec3& position)
 {
-	m_position = position;
-	m_isDirty = true;
+	this->position = position;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetPosition(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_position.x = x;
-	m_position.y = y;
-	m_position.z = z;
-	m_isDirty = true;
+	position.x = x;
+	position.y = y;
+	position.z = z;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetRotation(const glm::quat& rotation)
 {
-	m_rotation = rotation;
-	m_isDirty = true;
+	this->rotation = rotation;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetRotation(const glm::vec3& eulerAngles)
 {
-	m_rotation = glm::quat(glm::radians(eulerAngles));
-	m_isDirty = true;
+	rotation = glm::quat(glm::radians(eulerAngles));
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetRotation(GLfloat angle, const glm::vec3& axis)
 {
-	m_rotation = glm::quat(glm::radians(angle), axis);
-	m_isDirty = true;
+	rotation = glm::quat(glm::radians(angle), axis);
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetRotation(GLfloat pitch, GLfloat yaw, GLfloat roll)
 {
-	m_rotation = glm::quat(glm::radians(glm::vec3(pitch, yaw, roll)));
-	m_isDirty = true;
+	rotation = glm::quat(glm::radians(glm::vec3(pitch, yaw, roll)));
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetScale(GLfloat scale)
 {
-	m_scale.x = scale;
-	m_scale.y = scale;
-	m_scale.z = scale;
-	m_isDirty = true;
+	this->scale.x = scale;
+	this->scale.y = scale;
+	this->scale.z = scale;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetScale(const glm::vec3& scale)
 {
-	m_scale = scale;
-	m_isDirty = true;
+	this->scale = scale;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::SetScale(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_scale.x = x;
-	m_scale.y = y;
-	m_scale.z = z;
-	m_isDirty = true;
+	scale.x = x;
+	scale.y = y;
+	scale.z = z;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Translate(const glm::vec3& translation, Space space)
@@ -114,15 +114,15 @@ void Transform::Translate(GLfloat x, GLfloat y, GLfloat z, Space space)
 
 	if (space == Space::Local)
 	{
-		m_position += glm::vec3(m_matrix * glm::vec4(x, y, z, 0.0f));
+		position += glm::vec3(matrix * glm::vec4(x, y, z, 0.0f));
 	}
 
 	else
 	{
-		m_position += glm::vec3(x, y, z);
+		position += glm::vec3(x, y, z);
 	}
 
-	m_isDirty = true;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Rotate(const glm::quat& rotation, Space space)
@@ -131,15 +131,15 @@ void Transform::Rotate(const glm::quat& rotation, Space space)
 
 	if (space == Space::Local)
 	{
-		m_rotation = m_rotation * tempRotation;
+		this->rotation = this->rotation * tempRotation;
 	}
 
 	else
 	{
-		m_rotation = tempRotation * m_rotation;
+		this->rotation = tempRotation * this->rotation;
 	}
 
-	m_isDirty = true;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Rotate(const glm::vec3& eulerAngles, Space space)
@@ -163,29 +163,29 @@ void Transform::Rotate(GLfloat pitch, GLfloat yaw, GLfloat roll, Space space)
 //======================================================================================================
 void Transform::Scale(GLfloat scale)
 {
-	m_scale *= glm::vec3(scale, scale, scale);
-	m_isDirty = true;
+	this->scale *= glm::vec3(scale, scale, scale);
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Scale(const glm::vec3& scale)
 {
-	m_scale *= scale;
-	m_isDirty = true;
+	this->scale *= scale;
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Scale(GLfloat x, GLfloat y, GLfloat z)
 {
-	m_scale *= glm::vec3(x, y, z);
-	m_isDirty = true;
+	scale *= glm::vec3(x, y, z);
+	isDirty = true;
 }
 //======================================================================================================
 void Transform::Update()
 {
-	if (m_isDirty)
+	if (isDirty)
 	{
-		m_matrix = glm::translate(glm::mat4(1.0f), m_position);
-		m_matrix *= glm::mat4_cast(m_rotation);
-		m_matrix = glm::scale(m_matrix, m_scale);
-		m_isDirty = false;
+		matrix = glm::translate(glm::mat4(1.0f), position);
+		matrix *= glm::mat4_cast(rotation);
+		matrix = glm::scale(matrix, scale);
+		isDirty = false;
 	}
 }

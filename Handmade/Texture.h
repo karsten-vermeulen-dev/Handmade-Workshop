@@ -40,18 +40,16 @@ public:
 		Texture4 = GL_TEXTURE3
 	};
 
-	static bool Load(const std::string& tag, const std::string& filename);
-	static void Unload(const std::string& tag = "");
-	static void SetRootFolder(const std::string& rootFolder);
-
 	Texture(const std::string& tag = "", const std::string& filename = "");
-	~Texture() {}
+
+	bool Load(const std::string& tag, const std::string& filename);
+	void Unload(const std::string& tag = "");
 
 	const std::string& GetTag() const;
 
-	void SetWrapping(WrapSetting wrapSetting);
 	void SetTexture(const std::string& tag);
-	void SetFilter(FilterType filterType, FilterSetting filterSetting);
+	void SetWrapping(WrapSetting wrapSetting) const;
+	void SetFilter(FilterType filterType, FilterSetting filterSetting) const;
 
 	void Bind() const;
 	void Bind(TextureUnit textureUnit) const;
@@ -59,10 +57,10 @@ public:
 
 private:
 
-	GLuint m_ID = 0;
-	std::string m_tag;
+	GLuint ID{ 0 };
+	std::string tag;
 
-	static std::string s_rootFolder;
-	static std::map<std::string, Texture> s_textures;
+	static std::string rootFolder;
+	static std::map<std::string, Texture> textures;
 
 };
