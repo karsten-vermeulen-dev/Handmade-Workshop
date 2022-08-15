@@ -4,17 +4,17 @@
 #include "Audio.h"
 #include "Utility.h"
 
-FMOD::System* Audio::s_audioSystem = nullptr;
-std::string Audio::s_rootFolder = "Assets/Audio/";
-std::map<std::string, FMOD::Sound*> Audio::s_music;
-std::map<std::string, FMOD::Sound*> Audio::s_sounds;
+FMOD::System* Audio::audioSystem = nullptr;
+std::string Audio::rootFolder = "Assets/Audio/";
+std::map<std::string, FMOD::Sound*> Audio::music;
+std::map<std::string, FMOD::Sound*> Audio::sounds;
 
 //======================================================================================================
 bool Audio::Initialize()
 {
-	System_Create(&s_audioSystem);
+	System_Create(&audioSystem);
 
-	if (s_audioSystem->init(100, FMOD_INIT_NORMAL, 0) != FMOD_OK)
+	if (audioSystem->init(100, FMOD_INIT_NORMAL, 0) != FMOD_OK)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Error initializing the FMOD audio system.", Utility::Severity::Failure);
@@ -26,13 +26,12 @@ bool Audio::Initialize()
 //======================================================================================================
 void Audio::Shutdown()
 {
-	Unload();
-	s_audioSystem->release();
+	audioSystem->release();
 }
 //======================================================================================================
 void Audio::Update()
 {
-	s_audioSystem->update();
+	audioSystem->update();
 }
 //======================================================================================================
 bool Audio::Load(Type type, const std::string& tag, const std::string& filename)
@@ -42,37 +41,37 @@ bool Audio::Load(Type type, const std::string& tag, const std::string& filename)
 	//Sound effects are loaded directly into memory
 	if (type == Type::Sound)
 	{
-		assert(s_sounds.find(tag) == s_sounds.end());
-		s_audioSystem->createSound((s_rootFolder + filename).c_str(), FMOD_DEFAULT, 0, &audio);
+		assert(sounds.find(tag) == sounds.end());
+		audioSystem->createSound((rootFolder + filename).c_str(), FMOD_DEFAULT, 0, &audio);
 
 		if (!audio)
 		{
 			Utility::Log(Utility::Destination::WindowsMessageBox,
-				"Error loading sound file \"" + (s_rootFolder + filename) + "\"\n\n"
+				"Error loading sound file \"" + (rootFolder + filename) + "\"\n\n"
 				"Possible causes could be a corrupt or missing file. Another reason could be "
 				"that the filename and/or path are incorrectly spelt.", Utility::Severity::Failure);
 			return false;
 		}
 
-		s_sounds[tag] = audio;
+		sounds[tag] = audio;
 	}
 
 	//Music is streamed directly from the folder on drive
 	else
 	{
-		assert(s_music.find(tag) == s_music.end());
-		s_audioSystem->createStream((s_rootFolder + filename).c_str(), FMOD_LOOP_NORMAL | FMOD_2D, 0, &audio);
+		assert(music.find(tag) == music.end());
+		audioSystem->createStream((rootFolder + filename).c_str(), FMOD_LOOP_NORMAL | FMOD_2D, 0, &audio);
 
 		if (!audio)
 		{
 			Utility::Log(Utility::Destination::WindowsMessageBox,
-				"Error loading music file \"" + (s_rootFolder + filename) + "\"\n\n"
+				"Error loading music file \"" + (rootFolder + filename) + "\"\n\n"
 				"Possible causes could be a corrupt or missing file. Another reason could be "
 				"that the filename and/or path are incorrectly spelt.", Utility::Severity::Failure);
 			return false;
 		}
 
-		s_music[tag] = audio;
+		music[tag] = audio;
 	}
 
 	return true;
@@ -82,50 +81,42 @@ void Audio::Unload(const std::string& tag)
 {
 	if (!tag.empty())
 	{
-		auto it = s_music.find(tag);
+		auto it = music.find(tag);
 
-		if (it == s_music.end())
+		if (it == music.end())
 		{
-			it = s_sounds.find(tag);
-			assert(it != s_sounds.end());
+			it = sounds.find(tag);
+			assert(it != sounds.end());
 			it->second->release();
-			s_sounds.erase(it);
+			sounds.erase(it);
 		}
 
 		else
 		{
 			it->second->release();
-			s_music.erase(it);
+			music.erase(it);
 		}
 	}
 
 	else
 	{
-		for (const auto& music : s_music)
+		for (const auto& music : music)
 		{
 			music.second->release();
 		}
 
-		for (const auto& sound : s_sounds)
+		for (const auto& sound : sounds)
 		{
 			sound.second->release();
 		}
 
-		s_music.clear();
-		s_sounds.clear();
+		music.clear();
+		sounds.clear();
 	}
 }
 //======================================================================================================
-void Audio::SetRootFolder(const std::string& rootFolder)
+Audio::Audio(Type type, const std::string& tag, const std::string& filename) : type(type)
 {
-	s_rootFolder = rootFolder;
-}
-//======================================================================================================
-Audio::Audio(Type type, const std::string& tag, const std::string& filename) : m_type(type)
-{
-	m_isMuted = false;
-	m_loopCount = Loop::None;
-
 	if (!filename.empty())
 	{
 		Load(type, tag, filename);
@@ -138,47 +129,28 @@ Audio::Audio(Type type, const std::string& tag, const std::string& filename) : m
 	}
 }
 //======================================================================================================
-Audio::Audio(const Audio& copy)
-{
-	m_pan = copy.m_pan;
-	m_volume = copy.m_volume;
-	m_frequency = copy.m_frequency;
-	m_minFrequency = copy.m_minFrequency;
-	m_maxFrequency = copy.m_maxFrequency;
-
-	m_tag = copy.m_tag;
-	m_type = copy.m_type;
-	m_isMuted = copy.m_isMuted;
-	m_loopCount = copy.m_loopCount;
-
-	m_channel = nullptr;
-	m_channelGroup = nullptr;
-
-	SetAudio(m_tag, m_type);
-}
-//======================================================================================================
 float Audio::GetPan() const
 {
-	return m_pan;
+	return pan;
 }
 //======================================================================================================
 float Audio::GetVolume() const
 {
-	return m_volume;
+	return volume;
 }
 //======================================================================================================
 float Audio::GetFrequency() const
 {
-	return m_frequency;
+	return frequency;
 }
 //======================================================================================================
 Fuint Audio::GetLength() const
 {
 	Fuint length = 0;
 
-	if (m_audioData)
+	if (audioData)
 	{
-		m_audioData->getLength(&length, FMOD_TIMEUNIT_MS);
+		audioData->getLength(&length, FMOD_TIMEUNIT_MS);
 	}
 
 	return length;
@@ -188,9 +160,9 @@ Fuint Audio::GetPosition() const
 {
 	Fuint tempPosition = 0;
 
-	if (m_channel)
+	if (channel)
 	{
-		m_channel->getPosition(&tempPosition, FMOD_TIMEUNIT_MS);
+		channel->getPosition(&tempPosition, FMOD_TIMEUNIT_MS);
 	}
 
 	return tempPosition;
@@ -198,61 +170,61 @@ Fuint Audio::GetPosition() const
 //======================================================================================================
 void Audio::SetPan(float pan)
 {
-	m_pan = std::clamp(pan, LEFT_PAN, RIGHT_PAN);
-	assert(m_channel != nullptr);
-	m_channel->setPan(m_pan);
+	pan = std::clamp(pan, leftPan, rightPan);
+	assert(channel != nullptr);
+	channel->setPan(pan);
 }
 //======================================================================================================
 void Audio::SetVolume(float volume)
 {
-	m_volume = std::clamp(volume, MIN_VOLUME, MAX_VOLUME);
-	assert(m_channel != nullptr);
-	m_channel->setVolume(m_volume);
+	volume = std::clamp(volume, minVolume, maxVolume);
+	assert(channel != nullptr);
+	channel->setVolume(volume);
 }
 //======================================================================================================
 void Audio::SetFrequency(float frequency)
 {
-	m_frequency = std::clamp(frequency, m_minFrequency, m_maxFrequency);
-	assert(m_channel != nullptr);
-	m_channel->setFrequency(m_frequency);
+	frequency = std::clamp(frequency, minFrequency, maxFrequency);
+	assert(channel != nullptr);
+	channel->setFrequency(frequency);
 }
 //======================================================================================================
 void Audio::IsMuted(bool flag)
 {
-	m_isMuted = flag;
-	assert(m_channel != nullptr);
-	m_channel->setMute(m_isMuted);
+	isMuted = flag;
+	assert(channel != nullptr);
+	channel->setMute(isMuted);
 }
 //======================================================================================================
 void Audio::SetLoopCount(Loop loopType, Loop loopCount)
 {
 	if (loopType == Loop::Custom)
 	{
-		m_loopCount = loopCount;
+		loopCount = loopCount;
 	}
 
 	else if (loopType == Loop::Endless || loopType == Loop::None || loopType == Loop::Single)
 	{
-		m_loopCount = loopType;
+		loopCount = loopType;
 	}
 
-	assert(m_channel != nullptr);
-	m_channel->setLoopCount(static_cast<int>(m_loopCount));
+	assert(channel != nullptr);
+	channel->setLoopCount(static_cast<int>(loopCount));
 }
 //======================================================================================================
 void Audio::SetAudio(const std::string& tag, Type type)
 {
-	auto& audioMap = (type == Type::Music) ? s_music : s_sounds;
+	auto& audioMap = (type == Type::Music) ? music : sounds;
 	auto it = audioMap.find(tag);
 	assert(it != audioMap.end());
-	m_audioData = (*it).second;
-	m_tag = tag;
+	audioData = (*it).second;
+	this->tag = tag;
 }
 //======================================================================================================
 void Audio::SetFrequencyRange(float minFrequency, float maxFrequency)
 {
-	m_minFrequency = minFrequency;
-	m_maxFrequency = maxFrequency;
+	minFrequency = minFrequency;
+	maxFrequency = maxFrequency;
 }
 //======================================================================================================
 void Audio::SetFrequencyInterval(Interval intervalType, float interval)
@@ -269,21 +241,21 @@ void Audio::SetFrequencyInterval(Interval intervalType, float interval)
 		ratio = 2.0f;
 	}
 
-	m_frequency *= pow(ratio, interval);
-	assert(m_channel != nullptr);
-	m_channel->setFrequency(m_frequency);
+	frequency *= pow(ratio, interval);
+	assert(channel != nullptr);
+	channel->setFrequency(frequency);
 }
 //======================================================================================================
 bool Audio::Play()
 {
-	assert(!m_tag.empty());
+	assert(!tag.empty());
 
-	if (!m_channel || (GetPosition() == 0))
+	if (!channel || (GetPosition() == 0))
 	{
-		s_audioSystem->playSound(m_audioData, m_channelGroup, false, &m_channel);
+		audioSystem->playSound(audioData, channelGroup, false, &channel);
 	}
 
-	if (!m_channel)
+	if (!channel)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Audio could not be played through any channels.", Utility::Severity::Failure);
@@ -295,47 +267,47 @@ bool Audio::Play()
 //======================================================================================================
 void Audio::Pause()
 {
-	if (m_channel)
+	if (channel)
 	{
-		m_channel->setPaused(true);
+		channel->setPaused(true);
 	}
 }
 //======================================================================================================
 void Audio::Resume()
 {
-	if (m_channel)
+	if (channel)
 	{
-		m_channel->setPaused(false);
+		channel->setPaused(false);
 	}
 }
 //======================================================================================================
 void Audio::Stop()
 {
-	if (m_channel)
+	if (channel)
 	{
-		m_channel->stop();
+		channel->stop();
 	}
 
-	m_channel = nullptr;
+	channel = nullptr;
 }
 //======================================================================================================
 void Audio::Move(Position position, Fuint positionValue)
 {
-	if (m_channel)
+	if (channel)
 	{
 		if (position == Position::Custom)
 		{
-			m_channel->setPosition(positionValue, FMOD_TIMEUNIT_MS);
+			channel->setPosition(positionValue, FMOD_TIMEUNIT_MS);
 		}
 
 		else if (position == Position::Start)
 		{
-			m_channel->setPosition(0, FMOD_TIMEUNIT_MS);
+			channel->setPosition(0, FMOD_TIMEUNIT_MS);
 		}
 
 		else if (position == Position::End)
 		{
-			m_channel->setPosition(GetLength(), FMOD_TIMEUNIT_MS);
+			channel->setPosition(GetLength(), FMOD_TIMEUNIT_MS);
 		}
 	}
 }

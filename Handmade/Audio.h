@@ -3,12 +3,6 @@
 #include <string>
 #include <fmod.hpp>
 
-const float LEFT_PAN = -1.0;
-const float RIGHT_PAN = 1.0f;
-
-const float MIN_VOLUME = 0.0f;
-const float MAX_VOLUME = 1.0f;
-
 //Better to have a shorter data type name
 typedef unsigned int Fuint;
 
@@ -48,15 +42,12 @@ public:
 	static void Shutdown();
 	static void Update();
 
-	static bool Load(Type type, const std::string& tag,
+	bool Load(Type type, const std::string& tag,
 		const std::string& filename);
-	static void Unload(const std::string& tag = "");
-
-	static void SetRootFolder(const std::string& rootFolder);
+	void Unload(const std::string& tag = "");
 
 	Audio(Type type = Type::Music, const std::string& tag = "",
 		const std::string& filename = "");
-	Audio(const Audio& copy);
 	~Audio() {}
 
 	float GetPan() const;
@@ -84,24 +75,29 @@ public:
 
 private:
 
-	Type m_type;
-	bool m_isMuted;
-	Loop m_loopCount;
-	std::string m_tag;
+	const float leftPan{ -1.0 };
+	const float rightPan{ 1.0f };
+	const float minVolume{ 0.0f };
+	const float maxVolume{ 1.0f };
 
-	float m_pan = 0.0f;
-	float m_volume = 0.5f;
-	float m_frequency = 44100.0f;
-	float m_minFrequency = 11025.0f;
-	float m_maxFrequency = 176400.0f;
+	Type type;
+	std::string tag;
+	bool isMuted{ false };
+	Loop loopCount{ Loop::None };
 
-	FMOD::Sound* m_audioData = nullptr;
-	FMOD::Channel* m_channel = nullptr;
-	FMOD::ChannelGroup* m_channelGroup = nullptr;
+	float pan{ 0.0f };
+	float volume{ 0.5f };
+	float frequency{ 44100.0f };
+	float minFrequency{ 11025.0f };
+	float maxFrequency{ 176400.0f };
 
-	static std::string s_rootFolder;
-	static FMOD::System* s_audioSystem;
-	static std::map<std::string, FMOD::Sound*> s_music;
-	static std::map<std::string, FMOD::Sound*> s_sounds;
+	FMOD::Sound* audioData{ nullptr };
+	FMOD::Channel* channel{ nullptr };
+	FMOD::ChannelGroup* channelGroup{ nullptr };
+
+	static std::string rootFolder;
+	static FMOD::System* audioSystem;
+	static std::map<std::string, FMOD::Sound*> music;
+	static std::map<std::string, FMOD::Sound*> sounds;
 
 };
