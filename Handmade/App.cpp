@@ -9,7 +9,7 @@
 //======================================================================================================
 App::App(State* initialState)
 {
-	m_appState.reset(initialState);
+	appState.reset(initialState);
 
 	if (Initialize())
 	{
@@ -27,36 +27,36 @@ App::~App()
 //======================================================================================================
 void App::Run()
 {
-	if (m_appState)
+	if (appState)
 	{
-		m_appState->OnEnter();
+		appState->OnEnter();
 	}
 
-	while (m_appState)
+	while (appState)
 	{
 		int startTime = SDL_GetTicks();
 
 		Screen::Instance()->Refresh();
 		Input::Instance()->Update();
 
-		State* nextState = m_appState->Update(m_deltaTime);
+		State* nextState = appState->Update(deltaTime);
 
-		m_appState->Render();
+		appState->Render();
 
 		Screen::Instance()->Present();
 
-		if (nextState != m_appState.get())
+		if (nextState != appState.get())
 		{
-			m_appState->OnExit();
-			m_appState.reset(nextState);
+			appState->OnExit();
+			appState.reset(nextState);
 
-			if (m_appState)
+			if (appState)
 			{
-				m_appState->OnEnter();
+				appState->OnEnter();
 			}
 		}
 
-		m_deltaTime = SDL_GetTicks() - startTime;
+		deltaTime = SDL_GetTicks() - startTime;
 	}
 }
 //======================================================================================================

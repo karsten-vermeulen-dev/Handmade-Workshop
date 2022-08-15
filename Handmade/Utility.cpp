@@ -1,7 +1,7 @@
 #include <fstream>
 #include "Utility.h"
 
-HWND Utility::s_windowHandle = nullptr;
+HWND Utility::windowHandle = nullptr;
 //======================================================================================================
 void Utility::CheckGLError()
 {
@@ -103,7 +103,7 @@ void Utility::DisplayExtensions()
 //======================================================================================================
 void Utility::SetWindowHandle(HWND windowHandle)
 {
-	s_windowHandle = windowHandle;
+	windowHandle = windowHandle;
 }
 //======================================================================================================
 void Utility::RemoveCharacter(std::string& string, char character)
@@ -245,7 +245,7 @@ void Utility::Log(Destination destination, GLfloat value, const std::string& lab
 	{
 		if (destination == Destination::WindowsMessageBox)
 		{
-			MessageBox(s_windowHandle,
+			MessageBox(windowHandle,
 				reinterpret_cast<LPCWSTR>(std::to_wstring(value).c_str()),
 				reinterpret_cast<LPCWSTR>(std::wstring(label.begin(), label.end()).c_str()),
 				MB_ICONINFORMATION | MB_OK);
@@ -267,7 +267,7 @@ void Utility::Log(Destination destination, const std::string& message, Severity 
 	{
 		if (destination == Destination::WindowsMessageBox)
 		{
-			MessageBox(s_windowHandle,
+			MessageBox(windowHandle,
 				reinterpret_cast<LPCWSTR>(std::wstring(message.begin(), message.end()).c_str()),
 				L"Log", static_cast<GLuint>(severity) | MB_OK);
 		}
@@ -310,7 +310,7 @@ void Utility::Log(Destination destination,
 				", z = " + std::to_string(z) +
 				", w = " + std::to_string(w);
 
-			MessageBox(s_windowHandle,
+			MessageBox(windowHandle,
 				reinterpret_cast<LPCWSTR>(std::wstring(message.begin(), message.end()).c_str()),
 				reinterpret_cast<LPCWSTR>(std::wstring(label.begin(), label.end()).c_str()),
 				MB_ICONINFORMATION | MB_OK);

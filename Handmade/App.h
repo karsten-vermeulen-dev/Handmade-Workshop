@@ -21,7 +21,7 @@ private:
 	bool CreateObjects();
 	void Shutdown();
 
-	int m_deltaTime = 0;
-	std::unique_ptr<State> m_appState;
+	int deltaTime{ 0 };
+	std::unique_ptr<State> appState;
 
 };

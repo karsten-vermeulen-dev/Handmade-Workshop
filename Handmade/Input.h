@@ -60,26 +60,26 @@ public:
 
 private:
 
-	Input();
+	Input() {}
 	Input(const Input&);
 	Input& operator=(const Input&);
 
-	char m_keyUp{ 0 };
-	char m_keyDown{ 0 };
+	char keyUp{ 0 };
+	char keyDown{ 0 };
 
-	bool m_isXClicked{ false };
-	bool m_isKeyPressed{ false };
-	bool m_isWindowResized{ false };
+	bool isXClicked{ false };
+	bool isKeyPressed{ false };
+	bool isWindowResized{ false };
 
-	KeyState m_keyStates{ nullptr };
-	SDL_Cursor* m_cursor{ nullptr };
+	KeyState keyStates{ nullptr };
+	SDL_Cursor* cursor{ nullptr };
 
-	glm::ivec2 m_mouseWheel{ 0 };
-	glm::ivec2 m_mouseMotion{ 0 };
-	glm::ivec2 m_mousePosition{ 0 };
+	glm::ivec2 mouseWheel{ 0 };
+	glm::ivec2 mouseMotion{ 0 };
+	glm::ivec2 mousePosition{ 0 };
 
-	bool m_isLeftButtonClicked{ false };
-	bool m_isRightButtonClicked{ false };
-	bool m_isMiddleButtonClicked{ false };
+	bool isLeftButtonClicked{ false };
+	bool isRightButtonClicked{ false };
+	bool isMiddleButtonClicked{ false };
 
 };

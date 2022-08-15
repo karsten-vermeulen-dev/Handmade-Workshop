@@ -65,6 +65,6 @@ public:
 
 private:
 
-	static HWND s_windowHandle;
+	static HWND windowHandle;
 
 };

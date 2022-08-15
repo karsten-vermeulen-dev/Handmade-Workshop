@@ -48,18 +48,18 @@ public:
 	void SetColor(GLuint r = 0U,
 		GLuint g = 0U, GLuint b = 0U, GLuint a = 1U);
 
-	void Refresh();
-	void Present();
-	void Shutdown();
+	void Refresh() const;
+	void Present() const;
+	void Shutdown() const;
 
 private:
 
-	Screen();
+	Screen() {}
 	Screen(const Screen&);
 	Screen& operator=(Screen&);
 
-	glm::ivec2 m_resolution{ 0 };
-	SDL_Window* m_window{ nullptr };
-	SDL_GLContext m_context{ nullptr };
+	glm::ivec2 resolution{ 0 };
+	SDL_Window* window{ nullptr };
+	SDL_GLContext context{ nullptr };
 
 };

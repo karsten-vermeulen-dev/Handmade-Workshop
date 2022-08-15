@@ -12,9 +12,6 @@ public:
 	static bool Initialize();
 	static void Shutdown();
 
-	Shader() {}
-	~Shader() {}
-
 	GLuint GetUniformID(const std::string& uniform) const;
 	GLuint GetAttributeID(const std::string& attribute) const;
 
@@ -37,19 +34,19 @@ public:
 	void SendData(const std::string& uniform,
 		const glm::mat4& matrix4x4, bool transposed = false) const;
 
-	void Use();
-	void Destroy();
+	void Use() const;
+	void Destroy() const;
 
 private:
 
 	bool LinkProgram();
 	bool CompileShaders(const std::string& filename);
 
-	static GLint s_vertexShaderID;
-	static GLint s_fragmentShaderID;
+	static GLint vertexShaderID;
+	static GLint fragmentShaderID;
 
-	GLuint m_shaderProgramID = 0;
-	std::map<std::string, GLuint> m_uniforms;
-	std::map<std::string, GLuint> m_attributes;
+	GLuint shaderProgramID{ 0 };
+	std::map<std::string, GLuint> uniforms;
+	std::map<std::string, GLuint> attributes;
 
 };

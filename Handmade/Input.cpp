@@ -8,73 +8,71 @@ Input* Input::Instance()
 	return inputObject;
 }
 //======================================================================================================
-Input::Input() {}
-//======================================================================================================
 bool Input::IsXClicked() const
 {
-	return m_isXClicked;
+	return isXClicked;
 }
 //======================================================================================================
 bool Input::IsKeyPressed() const
 {
-	return m_isKeyPressed;
+	return isKeyPressed;
 }
 //======================================================================================================
 bool Input::IsWindowResized() const
 {
-	return m_isWindowResized;
+	return isWindowResized;
 }
 //======================================================================================================
 bool Input::IsLeftButtonClicked() const
 {
-	return m_isLeftButtonClicked;
+	return isLeftButtonClicked;
 }
 //======================================================================================================
 bool Input::IsRightButtonClicked() const
 {
-	return m_isRightButtonClicked;
+	return isRightButtonClicked;
 }
 //======================================================================================================
 bool Input::IsMiddleButtonClicked() const
 {
-	return m_isMiddleButtonClicked;
+	return isMiddleButtonClicked;
 }
 //======================================================================================================
 const glm::ivec2& Input::GetMouseWheel() const
 {
-	return m_mouseWheel;
+	return mouseWheel;
 }
 //======================================================================================================
 const glm::ivec2& Input::GetMouseMotion() const
 {
-	return m_mouseMotion;
+	return mouseMotion;
 }
 //======================================================================================================
 const glm::ivec2& Input::GetMousePosition() const
 {
-	return m_mousePosition;
+	return mousePosition;
 }
 //======================================================================================================
 char Input::GetKeyUp() const
 {
-	return m_keyUp;
+	return keyUp;
 }
 //======================================================================================================
 char Input::GetKeyDown() const
 {
-	return m_keyDown;
+	return keyDown;
 }
 //======================================================================================================
 KeyState Input::GetKeyStates() const
 {
-	return m_keyStates;
+	return keyStates;
 }
 //======================================================================================================
 void Input::SetCursorType(CursorType cursorType)
 {
-	SDL_FreeCursor(m_cursor);
-	m_cursor = SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursorType));
-	SDL_SetCursor(m_cursor);
+	SDL_FreeCursor(cursor);
+	cursor = SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursorType));
+	SDL_SetCursor(cursor);
 }
 //======================================================================================================-
 void Input::SetCursorState(CursorState cursorEnabled, CursorState cursorVisible)
@@ -109,12 +107,12 @@ void Input::Update()
 	//so that it has no left over data
 	SDL_Event events;
 
-	m_isXClicked = false;
-	m_isWindowResized = false;
-	m_mouseWheel = glm::ivec2(0);
-	m_mouseMotion = glm::ivec2(0);
+	isXClicked = false;
+	isWindowResized = false;
+	mouseWheel = glm::ivec2(0);
+	mouseMotion = glm::ivec2(0);
 
-	m_keyStates = SDL_GetKeyboardState(nullptr);
+	keyStates = SDL_GetKeyboardState(nullptr);
 
 	//We check for events on SDL's event queue and keep 
 	//this loop running until all events have been processed
@@ -127,7 +125,7 @@ void Input::Update()
 		{
 			if (events.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
 			{
-				m_isWindowResized = true;
+				isWindowResized = true;
 			}
 
 			break;
@@ -135,37 +133,37 @@ void Input::Update()
 
 		case SDL_QUIT:
 		{
-			m_isXClicked = true;
+			isXClicked = true;
 			break;
 		}
 
 		case SDL_KEYUP:
 		{
-			m_isKeyPressed = false;
-			m_keyUp = events.key.keysym.sym;
+			isKeyPressed = false;
+			keyUp = events.key.keysym.sym;
 			break;
 		}
 
 		case SDL_KEYDOWN:
 		{
-			m_isKeyPressed = true;
-			m_keyUp = events.key.keysym.sym;
+			isKeyPressed = true;
+			keyUp = events.key.keysym.sym;
 			break;
 		}
 
 		case SDL_MOUSEMOTION:
 		{
-			m_mousePosition.x = events.motion.x;
-			m_mousePosition.y = events.motion.y;
-			m_mouseMotion.x = events.motion.xrel;
-			m_mouseMotion.y = events.motion.yrel;
+			mousePosition.x = events.motion.x;
+			mousePosition.y = events.motion.y;
+			mouseMotion.x = events.motion.xrel;
+			mouseMotion.y = events.motion.yrel;
 			break;
 		}
 
 		case SDL_MOUSEWHEEL:
 		{
-			m_mouseWheel.x = events.wheel.x;
-			m_mouseWheel.y = events.wheel.y;
+			mouseWheel.x = events.wheel.x;
+			mouseWheel.y = events.wheel.y;
 			break;
 		}
 
@@ -173,9 +171,9 @@ void Input::Update()
 		{
 			switch (events.button.button)
 			{
-			case SDL_BUTTON_LEFT: { m_isLeftButtonClicked = false; break; }
-			case SDL_BUTTON_RIGHT: { m_isRightButtonClicked = false; break; }
-			case SDL_BUTTON_MIDDLE: { m_isMiddleButtonClicked = false; break; }
+			case SDL_BUTTON_LEFT: { isLeftButtonClicked = false; break; }
+			case SDL_BUTTON_RIGHT: { isRightButtonClicked = false; break; }
+			case SDL_BUTTON_MIDDLE: { isMiddleButtonClicked = false; break; }
 			}
 
 			break;
@@ -185,9 +183,9 @@ void Input::Update()
 		{
 			switch (events.button.button)
 			{
-			case SDL_BUTTON_LEFT: { m_isLeftButtonClicked = true; break; }
-			case SDL_BUTTON_RIGHT: { m_isRightButtonClicked = true; break; }
-			case SDL_BUTTON_MIDDLE: { m_isMiddleButtonClicked = true; break; }
+			case SDL_BUTTON_LEFT: { isLeftButtonClicked = true; break; }
+			case SDL_BUTTON_RIGHT: { isRightButtonClicked = true; break; }
+			case SDL_BUTTON_MIDDLE: { isMiddleButtonClicked = true; break; }
 			}
 			break;
 		}

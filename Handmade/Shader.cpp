@@ -3,14 +3,15 @@
 #include "Shader.h"
 #include "Utility.h"
 
-GLint Shader::s_vertexShaderID = 0;
-GLint Shader::s_fragmentShaderID = 0;
+GLint Shader::vertexShaderID = 0;
+GLint Shader::fragmentShaderID = 0;
+
 //======================================================================================================
 bool Shader::Initialize()
 {
-	s_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 
-	if (s_vertexShaderID == 0)
+	if (vertexShaderID == 0)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Error creating vertex shader object. Possible causes could be a "
@@ -19,9 +20,9 @@ bool Shader::Initialize()
 		return false;
 	}
 
-	s_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	if (s_fragmentShaderID == 0)
+	if (fragmentShaderID == 0)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Error creating fragment shader object. Possible causes could be a "
@@ -35,31 +36,31 @@ bool Shader::Initialize()
 //======================================================================================================
 void Shader::Shutdown()
 {
-	glDeleteShader(s_vertexShaderID);
-	glDeleteShader(s_fragmentShaderID);
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
 }
 //======================================================================================================
 GLuint Shader::GetUniformID(const std::string& uniform) const
 {
-	auto it = m_uniforms.find(uniform);
-	assert(it != m_uniforms.end());
+	auto it = uniforms.find(uniform);
+	assert(it != uniforms.end());
 	return it->second;
 }
 //======================================================================================================
 GLuint Shader::GetAttributeID(const std::string& attribute) const
 {
-	auto it = m_attributes.find(attribute);
-	assert(it != m_attributes.end());
+	auto it = attributes.find(attribute);
+	assert(it != attributes.end());
 	return it->second;
 }
 //======================================================================================================
 bool Shader::Create(const std::string& vertexShaderFilename, const std::string& fragmentShaderFilename)
 {
-	m_shaderProgramID = glCreateProgram();
+	shaderProgramID = glCreateProgram();
 
 	//If the shader program ID is 0 it means an error occurred. Possible causes are 
 	//that GLAD has not been set up properly yet or your graphics card is very old
-	if (m_shaderProgramID == 0)
+	if (shaderProgramID == 0)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Error creating shader program. Possible causes could be a "
@@ -88,29 +89,29 @@ bool Shader::Create(const std::string& vertexShaderFilename, const std::string& 
 //======================================================================================================
 void Shader::BindUniform(const std::string& uniform)
 {
-	auto it = m_uniforms.find(uniform);
+	auto it = uniforms.find(uniform);
 
-	if (it == m_uniforms.end())
+	if (it == uniforms.end())
 	{
 		//Unbound shader uniforms are either 
 		//not present in the shader or unused
-		auto ID = glGetUniformLocation(m_shaderProgramID, uniform.c_str());
+		auto ID = glGetUniformLocation(shaderProgramID, uniform.c_str());
 		assert(ID != -1);
-		m_uniforms[uniform] = ID;
+		uniforms[uniform] = ID;
 	}
 }
 //======================================================================================================
 void Shader::BindAttribute(const std::string& attribute)
 {
-	auto it = m_attributes.find(attribute);
+	auto it = attributes.find(attribute);
 
-	if (it == m_attributes.end())
+	if (it == attributes.end())
 	{
 		//Unbound shader attributes are either 
 		//not present in the shader or unused
-		auto ID = glGetAttribLocation(m_shaderProgramID, attribute.c_str());
+		auto ID = glGetAttribLocation(shaderProgramID, attribute.c_str());
 		assert(ID != -1);
-		m_attributes[attribute] = ID;
+		attributes[attribute] = ID;
 	}
 }
 //======================================================================================================
@@ -156,32 +157,32 @@ void Shader::SendData(const std::string& uniform,
 	glUniformMatrix4fv(GetUniformID(uniform), 1, transposed, &matrix4x4[0][0]);
 }
 //======================================================================================================
-void Shader::Use()
+void Shader::Use() const
 {
-	glUseProgram(m_shaderProgramID);
+	glUseProgram(shaderProgramID);
 }
 //======================================================================================================
-void Shader::Destroy()
+void Shader::Destroy() const
 {
-	glDeleteProgram(m_shaderProgramID);
+	glDeleteProgram(shaderProgramID);
 }
 //======================================================================================================
 bool Shader::LinkProgram()
 {
-	glAttachShader(m_shaderProgramID, s_vertexShaderID);
-	glAttachShader(m_shaderProgramID, s_fragmentShaderID);
-	glLinkProgram(m_shaderProgramID);
-	glDetachShader(m_shaderProgramID, s_vertexShaderID);
-	glDetachShader(m_shaderProgramID, s_fragmentShaderID);
+	glAttachShader(shaderProgramID, vertexShaderID);
+	glAttachShader(shaderProgramID, fragmentShaderID);
+	glLinkProgram(shaderProgramID);
+	glDetachShader(shaderProgramID, vertexShaderID);
+	glDetachShader(shaderProgramID, fragmentShaderID);
 
 	GLint result = 0;
-	glGetProgramiv(m_shaderProgramID, GL_LINK_STATUS, &result);
+	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &result);
 
 	if (result == GL_FALSE)
 	{
 		GLchar error[1000];
 		GLsizei bufferSize = 1000;
-		glGetProgramInfoLog(m_shaderProgramID, bufferSize, &bufferSize, error);
+		glGetProgramInfoLog(shaderProgramID, bufferSize, &bufferSize, error);
 		Utility::Log(Utility::Destination::WindowsMessageBox, error, Utility::Severity::Failure);
 		return false;
 	}
@@ -204,7 +205,7 @@ bool Shader::CompileShaders(const std::string& filename)
 
 	std::vector<std::string> subStrings;
 	Utility::ParseString(const_cast<std::string&>(filename), subStrings, '.');
-	auto shaderID = (subStrings[1] == "vert") ? s_vertexShaderID : s_fragmentShaderID;
+	auto shaderID = (subStrings[1] == "vert") ? vertexShaderID : fragmentShaderID;
 
 	const GLchar* finalCode = reinterpret_cast<const GLchar*>(sourceCode.c_str());
 	glShaderSource(shaderID, 1, &finalCode, nullptr);

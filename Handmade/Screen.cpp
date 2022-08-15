@@ -14,8 +14,6 @@ Screen* Screen::Instance()
 	return screenObject;
 }
 //======================================================================================================
-Screen::Screen() {}
-//======================================================================================================
 bool Screen::Initialize(const std::string& filename)
 {
 	std::map<std::string, std::string> dataMap;
@@ -53,27 +51,27 @@ bool Screen::Initialize(const std::string& filename)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, std::stoi(dataMap["Major"]));
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, std::stoi(dataMap["Minor"]));
 
-	auto screenFlag = std::stoi(dataMap["Maximized"]) == 1 
+	auto screenFlag = std::stoi(dataMap["Maximized"]) == 1
 		? SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
 		: SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
-	m_window = SDL_CreateWindow(dataMap["Name"].c_str(),
+	window = SDL_CreateWindow(dataMap["Name"].c_str(),
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		std::stoi(dataMap["Width"]),
 		std::stoi(dataMap["Height"]),
 		screenFlag);
 
-	if (!m_window)
+	if (!window)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Game window could not be created.", Utility::Severity::Failure);
 		return false;
 	}
 
-	m_context = SDL_GL_CreateContext(m_window);
+	context = SDL_GL_CreateContext(window);
 
-	if (!m_context)
+	if (!context)
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"OpenGL context could not be created. "
@@ -92,8 +90,8 @@ bool Screen::Initialize(const std::string& filename)
 	//TODO - Not sure if we need this and where it should go
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	m_resolution.x = std::stoi(dataMap["Width"]);
-	m_resolution.y = std::stoi(dataMap["Height"]);
+	resolution.x = std::stoi(dataMap["Width"]);
+	resolution.y = std::stoi(dataMap["Height"]);
 
 	glEnable(GL_BLEND);
 	glEnable(GL_LINE_SMOOTH);
@@ -102,16 +100,16 @@ bool Screen::Initialize(const std::string& filename)
 
 	ImGui::CreateContext();
 	ImGui_ImplOpenGL3_Init("#version 460");
-	ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
+	ImGui_ImplSDL2_InitForOpenGL(window, context);
 
 	return true;
 }
 //======================================================================================================
-const glm::ivec2& Screen::GetResolution() 
+const glm::ivec2& Screen::GetResolution()
 {
-	SDL_GetWindowSize(m_window, &m_resolution.x, &m_resolution.y);
-	assert(m_resolution != glm::ivec2(0));
-	return m_resolution;
+	SDL_GetWindowSize(window, &resolution.x, &resolution.y);
+	assert(resolution != glm::ivec2(0));
+	return resolution;
 }
 //======================================================================================================
 void Screen::SetVSync(VSync VSync)
@@ -130,14 +128,14 @@ void Screen::IsDepthTestEnabled(bool flag)
 //======================================================================================================
 void Screen::SetCursorPosition(GLuint x, GLuint y)
 {
-	SDL_WarpMouseInWindow(m_window, x, y);
+	SDL_WarpMouseInWindow(window, x, y);
 }
 //======================================================================================================
 void Screen::SetResolution(GLint width, GLint height)
 {
-	m_resolution.x = width;
-	m_resolution.y = height;
-	glm::max(m_resolution, 1);
+	resolution.x = width;
+	resolution.y = height;
+	glm::max(resolution, 1);
 }
 //======================================================================================================
 void Screen::SetColor(const glm::vec4& color)
@@ -166,23 +164,23 @@ void Screen::SetViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 	glScissor(x, y, width, height);
 }
 //======================================================================================================
-void Screen::Refresh()
+void Screen::Refresh() const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 //======================================================================================================
-void Screen::Present()
+void Screen::Present() const
 {
-	SDL_GL_SwapWindow(m_window);
+	SDL_GL_SwapWindow(window);
 }
 //======================================================================================================
-void Screen::Shutdown()
+void Screen::Shutdown() const
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
-	SDL_GL_DeleteContext(m_context);
-	SDL_DestroyWindow(m_window);
+	SDL_GL_DeleteContext(context);
+	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
