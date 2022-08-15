@@ -77,32 +77,32 @@ public:
 	void SetBuffer(const std::string& tag);
 
 	void FillEBO(const GLuint* data,
-		GLsizeiptr bufferSize, Fill fill = Fill::Once);
+		GLsizeiptr bufferSize, Fill fill = Fill::Once) const;
 	void FillVBO(VBO vbo, const void* data,
-		GLsizeiptr bufferSize, Fill fill = Fill::Once);
+		GLsizeiptr bufferSize, Fill fill = Fill::Once) const;
 
 	void AppendEBO(const GLuint* data,
-		GLsizeiptr size, GLuint offset);
+		GLsizeiptr size, GLuint offset) const;
 	void AppendVBO(VBO vbo,
-		const void* data, GLsizeiptr size, GLuint offset);
+		const void* data, GLsizeiptr size, GLuint offset) const;
 
-	void LinkEBO();
+	void LinkEBO() const;
 	void LinkVBO(GLint attributeID,
-		VBO vbo, ComponentSize componentSize, DataType dataType);
+		VBO vbo, ComponentSize componentSize, DataType dataType) const;
 
 	void Render(RenderMode renderMode,
-		GLuint index = 0, GLuint totalRenderVertices = 0);
+		GLuint index = 0, GLuint totalRenderVertices = 0) const;
 
 private:
 
-	GLuint m_VAO = 0;
-	GLuint m_EBO = 0;
-	std::array<GLuint, 4> m_VBOs = { 0, 0, 0, 0 };
+	GLuint VAO{ 0 };
+	GLuint EBO{ 0 };
+	std::array<GLuint, 4> VBOs{ 0, 0, 0, 0 };
 
-	bool m_hasEBO;
-	std::string m_tag;
-	GLsizei m_totalVertices;
+	bool hasEBO{ false };
+	std::string tag;
+	GLsizei totalVertices{ 0 };
 
-	static std::map<std::string, Buffer> s_buffers;
+	static std::map<std::string, Buffer> buffers;
 
 };

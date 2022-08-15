@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "Buffer.h"
 
-std::map<std::string, Buffer> Buffer::s_buffers;
+std::map<std::string, Buffer> Buffer::buffers;
 
 //======================================================================================================
 void Buffer::SetPointSize(GLfloat size)
@@ -33,34 +33,34 @@ void Buffer::Destroy(const std::string& tag)
 {
 	if (!tag.empty())
 	{
-		auto it = s_buffers.find(tag);
-		assert(it != s_buffers.end());
+		auto it = buffers.find(tag);
+		assert(it != buffers.end());
 
-		if (it->second.m_hasEBO)
+		if (it->second.hasEBO)
 		{
-			glDeleteBuffers(1, &it->second.m_EBO);
+			glDeleteBuffers(1, &it->second.EBO);
 		}
 
-		glDeleteBuffers(4, it->second.m_VBOs.data());
-		glDeleteVertexArrays(1, &it->second.m_VAO);
+		glDeleteBuffers(4, it->second.VBOs.data());
+		glDeleteVertexArrays(1, &it->second.VAO);
 
-		s_buffers.erase(it);
+		buffers.erase(it);
 	}
 
 	else
 	{
-		for (auto& buffer : s_buffers)
+		for (auto& buffer : buffers)
 		{
-			if (buffer.second.m_hasEBO)
+			if (buffer.second.hasEBO)
 			{
-				glDeleteBuffers(1, &buffer.second.m_EBO);
+				glDeleteBuffers(1, &buffer.second.EBO);
 			}
 
-			glDeleteBuffers(4, buffer.second.m_VBOs.data());
-			glDeleteVertexArrays(1, &buffer.second.m_VAO);
+			glDeleteBuffers(4, buffer.second.VBOs.data());
+			glDeleteVertexArrays(1, &buffer.second.VAO);
 		}
 
-		s_buffers.clear();
+		buffers.clear();
 	}
 }
 //======================================================================================================
@@ -69,27 +69,27 @@ void Buffer::SetRenderStyle(RenderStyle renderStyle)
 	glPolygonMode(GL_FRONT_AND_BACK, renderStyle == RenderStyle::Polygonal ? GL_LINE : GL_FILL);
 }
 //======================================================================================================
-Buffer::Buffer(const std::string& tag, GLsizei totalVertices, bool hasEBO) 
-	: m_hasEBO(hasEBO), m_tag(tag), m_totalVertices(totalVertices)
+Buffer::Buffer(const std::string& tag, GLsizei totalVertices, bool hasEBO)
+	: hasEBO(hasEBO), tag(tag), totalVertices(totalVertices)
 {
-	for (auto& ID : m_VBOs)
+	for (auto& ID : VBOs)
 	{
 		ID = 0;
 	}
 
 	if (totalVertices > 0)
 	{
-		assert(s_buffers.find(tag) == s_buffers.end());
+		assert(buffers.find(tag) == buffers.end());
 
-		glGenVertexArrays(1, &m_VAO);
-		glGenBuffers(4, m_VBOs.data());
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(4, VBOs.data());
 
 		if (hasEBO)
 		{
-			glGenBuffers(1, &m_EBO);
+			glGenBuffers(1, &EBO);
 		}
 
-		s_buffers[tag] = *this;
+		buffers[tag] = *this;
 	}
 
 	else if (!tag.empty())
@@ -100,53 +100,53 @@ Buffer::Buffer(const std::string& tag, GLsizei totalVertices, bool hasEBO)
 //======================================================================================================
 const std::string& Buffer::GetTag() const
 {
-	return m_tag;
+	return   tag;
 }
 //======================================================================================================
 void Buffer::SetBuffer(const std::string& tag)
 {
-	auto it = s_buffers.find(tag);
-	assert(it != s_buffers.end());
+	auto it = buffers.find(tag);
+	assert(it != buffers.end());
 	*this = it->second;
 }
 //======================================================================================================
-void Buffer::FillEBO(const GLuint* data, GLsizeiptr bufferSize, Fill fill)
+void Buffer::FillEBO(const GLuint* data, GLsizeiptr bufferSize, Fill fill) const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, data, static_cast<GLenum>(fill));
 }
 //======================================================================================================
-void Buffer::FillVBO(VBO vbo, const void* data, GLsizeiptr bufferSize, Fill fill)
+void Buffer::FillVBO(VBO vbo, const void* data, GLsizeiptr bufferSize, Fill fill) const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[static_cast<int>(vbo)]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[static_cast<int>(vbo)]);
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, data, static_cast<GLenum>(fill));
 }
 //======================================================================================================
-void Buffer::AppendEBO(const GLuint* data, GLsizeiptr size, GLuint offset)
+void Buffer::AppendEBO(const GLuint* data, GLsizeiptr size, GLuint offset) const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
 }
 //======================================================================================================
-void Buffer::AppendVBO(VBO vbo, const void* data, GLsizeiptr size, GLuint offset)
+void Buffer::AppendVBO(VBO vbo, const void* data, GLsizeiptr size, GLuint offset) const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[static_cast<int>(vbo)]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[static_cast<int>(vbo)]);
 	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 }
 //======================================================================================================
-void Buffer::LinkEBO()
+void Buffer::LinkEBO() const
 {
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindVertexArray(0);
 }
 //======================================================================================================
-void Buffer::LinkVBO(GLint attributeID, VBO vbo, ComponentSize componentSize, DataType dataType)
+void Buffer::LinkVBO(GLint attributeID, VBO vbo, ComponentSize componentSize, DataType dataType) const
 {
 	assert(attributeID > -1);
 
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOs[static_cast<int>(vbo)]);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[static_cast<int>(vbo)]);
 
 	glVertexAttribPointer(attributeID, static_cast<GLint>(componentSize),
 		static_cast<GLenum>(dataType), GL_FALSE, 0, nullptr);
@@ -155,13 +155,13 @@ void Buffer::LinkVBO(GLint attributeID, VBO vbo, ComponentSize componentSize, Da
 	glBindVertexArray(0);
 }
 //======================================================================================================
-void Buffer::Render(RenderMode renderMode, GLuint index, GLuint totalRenderVertices)
+void Buffer::Render(RenderMode renderMode, GLuint index, GLuint totalRenderVertices) const
 {
-	assert(!m_tag.empty());
+	assert(!tag.empty());
 
-	glBindVertexArray(m_VAO);
+	glBindVertexArray(VAO);
 
-	if (m_hasEBO)
+	if (hasEBO)
 	{
 		if (index > 0)
 		{
@@ -172,13 +172,13 @@ void Buffer::Render(RenderMode renderMode, GLuint index, GLuint totalRenderVerti
 		else
 		{
 			glDrawElements(static_cast<GLenum>(renderMode),
-				m_totalVertices, GL_UNSIGNED_INT, (const void*)(nullptr));
+				totalVertices, GL_UNSIGNED_INT, (const void*)(nullptr));
 		}
 	}
 
 	else
 	{
-		glDrawArrays(static_cast<GLenum>(renderMode), 0, m_totalVertices);
+		glDrawArrays(static_cast<GLenum>(renderMode), 0, totalVertices);
 	}
 
 	glBindVertexArray(0);
