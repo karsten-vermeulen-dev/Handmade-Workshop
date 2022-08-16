@@ -64,53 +64,53 @@ bool Design::OnEnter()
 		return false;
 	}
 
-	/* lightShader->BindAttribute("vertexIn");
-	 lightShader->BindAttribute("colorIn");
-	 lightShader->BindAttribute("textureIn");
-	 lightShader->BindAttribute("normalIn");
+	lightShader->BindAttribute("vertexIn");
+	lightShader->BindAttribute("colorIn");
+	lightShader->BindAttribute("textureIn");
+	lightShader->BindAttribute("normalIn");
 
-	 lightShader->BindUniform("model");
-	 lightShader->BindUniform("view");
-	 lightShader->BindUniform("projection");
-	 lightShader->BindUniform("normal");
+	lightShader->BindUniform("model");
+	lightShader->BindUniform("view");
+	lightShader->BindUniform("projection");
+	lightShader->BindUniform("normal");
 
-	 lightShader->BindUniform("isTextured");
-	 lightShader->BindUniform("cameraPosition");
+	lightShader->BindUniform("isTextured");
+	lightShader->BindUniform("cameraPosition");
 
-	 lightShader->BindUniform("light.ambient");
-	 lightShader->BindUniform("light.diffuse");
-	 lightShader->BindUniform("light.specular");
-	 lightShader->BindUniform("light.position");
+	lightShader->BindUniform("light.ambient");
+	lightShader->BindUniform("light.diffuse");
+	lightShader->BindUniform("light.specular");
+	lightShader->BindUniform("light.position");
 
-	 lightShader->BindUniform("material.ambient");
-	 lightShader->BindUniform("material.diffuse");
-	 lightShader->BindUniform("material.specular");
-	 lightShader->BindUniform("material.shininess");*/
+	lightShader->BindUniform("material.ambient");
+	lightShader->BindUniform("material.diffuse");
+	lightShader->BindUniform("material.specular");
+	lightShader->BindUniform("material.shininess");
 
-	 // lightShader->BindUniform("light.attenuationLinear");
-	 // lightShader->BindUniform("light.attenuationConstant");
-	 // lightShader->BindUniform("light.attenuationQuadratic");
+	//lightShader->BindUniform("light.attenuationLinear");
+	//lightShader->BindUniform("light.attenuationConstant");
+	//lightShader->BindUniform("light.attenuationQuadratic");
 
-	 // consoleLog.push_front("'Light.vert' and 'Light.frag' shaders created and compiled.");
+	consoleLog.push_front("'Light.vert' and 'Light.frag' shaders created and compiled.");
 
-	 //TEST CODE to be used later for multiple lights
-	 /*for (size_t i = 0; i < TOTAL_LIGHTS; i++)
-	 {
-		 std::string index = std::to_string(i);
+	//TEST CODE to be used later for multiple lights
+	/*for (size_t i = 0; i < TOTAL_LIGHTS; i++)
+	{
+		std::string index = std::to_string(i);
 
-		  lightShader->BindUniform("lights[" + index + "].ambient");
-		  lightShader->BindUniform("lights[" + index + "].diffuse");
-		  lightShader->BindUniform("lights[" + index + "].specular");
-		  lightShader->BindUniform("lights[" + index + "].position");
-		  lightShader->BindUniform("lights[" + index + "].attenuationConstant");
-		  lightShader->BindUniform("lights[" + index + "].attenuationLinear");
-		  lightShader->BindUniform("lights[" + index + "].attenuationQuadratic");
-	 }*/
+		 lightShader->BindUniform("lights[" + index + "].ambient");
+		 lightShader->BindUniform("lights[" + index + "].diffuse");
+		 lightShader->BindUniform("lights[" + index + "].specular");
+		 lightShader->BindUniform("lights[" + index + "].position");
+		 lightShader->BindUniform("lights[" + index + "].attenuationConstant");
+		 lightShader->BindUniform("lights[" + index + "].attenuationLinear");
+		 lightShader->BindUniform("lights[" + index + "].attenuationQuadratic");
+	}*/
 
-	 //===================================================================
+	//===================================================================
 
-	//Find a different way to load standard default materials
-	//Material::Load("Defaults", "Defaults.mtl");
+   //Find a different way to load standard default materials
+   //Material::Load("Defaults", "Defaults.mtl");
 	consoleLog.push_front("Default materials loaded.");
 
 	//===================================================================
@@ -138,6 +138,8 @@ bool Design::OnEnter()
 	sceneCamera->GetTransform().SetPosition(0.0f, 0.0f, 50.0f);
 	sceneCamera->SetBackgroundColor(29U, 29U, 29U);
 	consoleLog.push_front("Scene camera created.");
+
+	light = std::make_unique<Light>("Main_light", 0.0f, 7.5f, 0.0f);
 
 	//=========================================================================
 
@@ -177,8 +179,6 @@ bool Design::OnEnter()
 		 audio2->Play();*/
 
 		 //==========================================================================
-
-		 // light = std::make_unique<Light>(0.0f, 7.5f, 0.0f);
 
 		 // model = std::make_unique<Model>("Teapot", "Teapot.obj", true);
 		 // model->GetTransform().SetScale(5.0f, 5.0f, 5.0f);
@@ -292,17 +292,17 @@ bool Design::Render()
 
 	grid->Render(mainShader);
 
+	lightShader.Use();
+	lightShader.SendData("cameraPosition", sceneCamera->GetTransform().GetPosition());
+	sceneCamera->SendToShader(lightShader);
+
+	light->SendToShader(lightShader);
+	light->Render(lightShader);
+
 	for (const auto& object : objects)
 	{
-		object->Render(mainShader);
+		object->Render(lightShader);
 	}
-
-	/*lightShader.Use();
-	lightShader.SendData("cameraPosition",  sceneCamera->GetTransform().GetPosition());
-
-	 light->SendToShader(lightShader);
-	 light->Render(lightShader);
-	 sceneCamera->SendToShader(lightShader);*/
 
 	 // axes->GetTransform().SetRotation( grid->GetTransform().GetRotation());
 	 // axes->Render(lightShader);
@@ -502,7 +502,8 @@ void Design::RenderMenu()
 		{
 			if (ImGui::MenuItem("Model...", nullptr, nullptr))
 			{
-				//Handle menu item...
+				objects.emplace_back(std::make_unique<Model>("Test_model", "Teapot.obj"));
+				grid->AddChild(objects.back().get());
 			}
 
 			if (ImGui::MenuItem("Shader...", nullptr, nullptr))
