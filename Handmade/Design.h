@@ -2,6 +2,7 @@
 #include <deque>
 #include <memory>
 #include <vector>
+#include "GLAD/gl.h"
 #include <glm.hpp>
 #include "Audio.h"
 #include "Axes.h"
@@ -13,24 +14,16 @@
 #include "Model.h"
 #include "Object.h"
 #include "Quad.h"
-#include "Sphere.h"
 #include "Shader.h"
+#include "Sphere.h"
 #include "State.h"
 #include "Text.h"
-
-const auto MINOR = 0.15f;
-const auto MAJOR = 0.85f;
-const auto FONT_SIZE = 18.0f;
-const auto UI_PADDING = 2.0f;
-const auto MENU_BAR_HEIGHT = 24;
-const auto MAX_CONSOLE_LOG_SIZE = 1000;
 
 class Design : public State
 {
 
 public:
 
-	Design();
 	virtual ~Design() {}
 
 	virtual bool OnEnter();
@@ -40,57 +33,64 @@ public:
 
 private:
 
+	const GLfloat minor{ 0.15f };
+	const GLfloat major{ 0.85f };
+	const GLfloat fontSize{ 18.0f };
+	const GLfloat paddingUI{ 2.0f };
+	const GLuint menuBarHeight{ 24 };
+	const GLuint maxConsoleLogSize{ 1000 };
+
 	void RenderMenu();
 	void RenderConsoleWindow();
 	void RenderHierarchyWindow();
 	void RenderPropertiesWindow();
 
-	GLint m_minorWidth{ 0 };
-	GLint m_majorWidth{ 0 };
-	GLint m_minorHeight{ 0 };
-	GLint m_majorHeight{ 0 };
-	
-	bool m_isStateComplete{ false };
+	GLint minorWidth{ 0 };
+	GLint majorWidth{ 0 };
+	GLint minorHeight{ 0 };
+	GLint majorHeight{ 0 };
 
-	glm::ivec2 m_resolution{ 0U };
-	glm::vec3 m_sceneRotation{ 45.0f, -30.0f, 0.0f };
+	bool isStateComplete{ false };
 
-	std::unique_ptr<Grid> m_grid;
-	std::unique_ptr<Axes> m_axes;
+	glm::ivec2 resolution{ 0U };
+	glm::vec3 sceneRotation{ 45.0f, -30.0f, 0.0f };
 
-	std::unique_ptr<Text> m_topText;
-	std::unique_ptr<Text> m_bottomText;
-	std::unique_ptr<Text> m_axesLabelText;
+	std::unique_ptr<Grid> grid;
+	std::unique_ptr<Axes> axes;
 
-	std::unique_ptr<Shader> m_mainShader;
-	std::unique_ptr<Shader> m_textShader;
-	std::unique_ptr<Shader> m_lightShader;
-	std::unique_ptr<Shader> m_testShader;
+	std::unique_ptr<Text> topText;
+	std::unique_ptr<Text> bottomText;
+	std::unique_ptr<Text> axesLabelText;
 
-	std::unique_ptr<FreeCamera> m_sceneCamera;
+	std::unique_ptr<Shader> mainShader;
+	std::unique_ptr<Shader> textShader;
+	std::unique_ptr<Shader> lightShader;
+	std::unique_ptr<Shader> testShader;
+
+	std::unique_ptr<FreeCamera> sceneCamera;
 
 	//For current testing===============================================
-	/*std::unique_ptr<Audio> m_audio1;
-	std::unique_ptr<Audio> m_audio2;
-	std::unique_ptr<Audio> m_audio3;*/
+	/*std::unique_ptr<Audio> audio1;
+	std::unique_ptr<Audio> audio2;
+	std::unique_ptr<Audio> audio3;*/
 
-	std::unique_ptr<Light> m_light;
-	
+	std::unique_ptr<Light> light;
+
 	//Generic object (for testing)
-	Object* m_activeObject{ nullptr };
-	std::vector<std::unique_ptr<Object>> m_objects;
+	Object* activeObject{ nullptr };
+	std::vector<std::unique_ptr<Object>> objects;
 
-	//std::unique_ptr<Tile> m_labelX;
-	//std::unique_ptr<Tile> m_labelY;
-	//std::unique_ptr<Tile> m_labelZ;
+	//std::unique_ptr<Tile> labelX;
+	//std::unique_ptr<Tile> labelY;
+	//std::unique_ptr<Tile> labelZ;
 
 	//Using static objects will enforce more copies being made 
 	//especially if the vector container has not been reserved
 	//Prefer to use smart pointer objects instead to avoid copies
-	//std::vector<Text> m_text;
-	//std::vector<Audio> m_audio;
+	//std::vector<Text> text;
+	//std::vector<Audio> audio;
 	//==================================================================
 
-	std::deque<std::string> m_consoleLog;
+	std::deque<std::string> consoleLog;
 
 };
