@@ -219,20 +219,21 @@ void Cuboid::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 void Cuboid::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
+	//TODO - Find a way to individually set shader attributes based on different shaders
 	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("textureIn"),
 		Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
-	// buffer.LinkVBO(shader.GetAttributeID("normalIn"),
-		//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+	buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+		Buffer::VBO::NormalBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 
-	normalMatrix = glm::inverse(glm::mat3(transform.GetMatrix()));
+	auto matrix = GetFinalMatrix();
+	normalMatrix = glm::inverse(matrix);
 
-	//shader.SendData("normal",  normalMatrix);
-
-	shader.SendData("model", GetFinalMatrix());
+	shader.SendData("model", matrix);
+	shader.SendData("normal", normalMatrix, true);
 	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
 
 	buffer.Render(Buffer::RenderMode::Triangles);

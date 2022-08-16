@@ -44,6 +44,8 @@ Quad::Quad(const std::string& tag, GLfloat width, GLfloat height, GLfloat r, GLf
 	//TODO - Find a way to only create one single 
 	//buffer to be shared amongst subsequent quads
 
+	//TODO - Add a material object for lighting purposes
+
 	buffer.LinkEBO();
 	buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
 	buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
@@ -104,34 +106,22 @@ void Quad::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 void Quad::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
+	//TODO - Find a way to individually set shader attributes based on different shaders
 	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("textureIn"),
 		Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
-	// buffer.LinkVBO(shader.GetAttributeID("normalIn"),
-		//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
+	buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+		Buffer::VBO::NormalBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 
-	// normalMatrix = glm::inverse(glm::mat3( transform.GetMatrix()));
-	//shader.SendData("normal",  normalMatrix);
+	auto matrix = GetFinalMatrix();
+	normalMatrix = glm::inverse(matrix);
 
-	//Quick fix to allow child objects without parent objects (this avoids a crash)
-	//TODO - What we require here is a proper parent/child linkage of objects
-	if (parent)
-	{
-		shader.SendData("model", parent->GetTransform().GetMatrix() * transform.GetMatrix());
-	}
-
-	else
-	{
-		shader.SendData("model", transform.GetMatrix());
-	}
-
+	shader.SendData("model", matrix);
+	shader.SendData("normal", normalMatrix, true);
 	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
-
-	//shader.SendData("isText", false);
-	shader.SendData("isTextured", false);
 
 	buffer.Render(Buffer::RenderMode::Triangles);
 }

@@ -43,6 +43,9 @@ Sphere::Sphere(const std::string& tag, GLfloat radius, GLuint segments, GLuint s
 	//Use this as a reference for sphere equation:
 	//http://mathworld.wolfram.com/Sphere.html
 
+	//TODO - Add normals to object
+	//TODO - Add a material object for lighting purposes
+
 	//We first need to calculate the longitude and latitude angle
 	GLfloat angleLongitude = glm::radians(360.0f / static_cast<GLfloat>(segments));
 	GLfloat angleLatitude = glm::radians(180.0f / static_cast<GLfloat>(slices));
@@ -133,22 +136,17 @@ void Sphere::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 void Sphere::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
+	//TODO - Find a way to individually set shader attributes based on different shaders
 	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 
-	//Quick fix to allow child objects without parent objects (this avoids a crash)
-	//TODO - What we require here is a proper parent/child linkage of objects
-	if (parent)
-	{
-		shader.SendData("model", parent->GetTransform().GetMatrix() * transform.GetMatrix());
-	}
+	auto matrix = GetFinalMatrix();
+	normalMatrix = glm::inverse(matrix);
 
-	else
-	{
-		shader.SendData("model", transform.GetMatrix());
-	}
+	shader.SendData("model", matrix);
+	shader.SendData("normal", normalMatrix, true);
 
 	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
 
