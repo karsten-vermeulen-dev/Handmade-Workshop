@@ -1,5 +1,5 @@
 # This file uses centimeters as units for non-parametric coordinates.
-
+mtllib Defaults.mtl
 g default
 v -1.226868 0.000000 2.055723
 v 1.328404 0.000000 2.055723
@@ -4684,6 +4684,7 @@ vn 0.690161 0.138909 0.710198
 vn 0.973751 0.144460 0.175897
 s 1
 g Fridge
+usemtl Chrome
 f 18/1/1 2/2/2 17/4/3
 f 17/4/3 2/2/2 9/3/4
 s 2
