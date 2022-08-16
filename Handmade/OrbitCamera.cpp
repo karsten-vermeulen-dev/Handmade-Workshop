@@ -8,7 +8,7 @@ OrbitCamera::OrbitCamera(const std::string& tag) : Camera(tag) {}
 //======================================================================================================
 void OrbitCamera::SetSensitivity(GLfloat sensitivity)
 {
-	m_sensitivity = sensitivity;
+	this->sensitivity = sensitivity;
 }
 //======================================================================================================
 void OrbitCamera::SetPitchRange(const glm::vec2& range)
@@ -18,14 +18,14 @@ void OrbitCamera::SetPitchRange(const glm::vec2& range)
 //======================================================================================================
 void OrbitCamera::SetPitchRange(GLfloat min, GLfloat max)
 {
-	m_pitchRange.x = min;
-	m_pitchRange.y = max;
+	pitchRange.x = min;
+	pitchRange.y = max;
 }
 //======================================================================================================
 void OrbitCamera::SetZoomDistanceRange(GLfloat min, GLfloat max)
 {
-	m_zoomDistanceRange.x = min;
-	m_zoomDistanceRange.y = max;
+	zoomDistanceRange.x = min;
+	zoomDistanceRange.y = max;
 }
 //======================================================================================================
 void OrbitCamera::SetZoomDistanceRange(const glm::vec2& range)
@@ -35,8 +35,8 @@ void OrbitCamera::SetZoomDistanceRange(const glm::vec2& range)
 //======================================================================================================
 void OrbitCamera::Zoom(GLint motion)
 {
-	m_zoomDistance -= motion;
-	m_zoomDistance = glm::clamp(m_zoomDistance, m_zoomDistanceRange.x, m_zoomDistanceRange.y);
+	zoomDistance -= motion;
+	zoomDistance = glm::clamp(zoomDistance, zoomDistanceRange.x, zoomDistanceRange.y);
 }
 //======================================================================================================
 void OrbitCamera::Rotate(const glm::ivec2& motion)
@@ -46,19 +46,19 @@ void OrbitCamera::Rotate(const glm::ivec2& motion)
 //======================================================================================================
 void OrbitCamera::Rotate(GLint motionX, GLint motionY)
 {
-	auto rotation = m_transform.GetEulerAngles();
+	auto rotation = transform.GetEulerAngles();
 
 	//The y rotation is the azimuth and the x rotation is the elevation
-	rotation.y += motionX * m_sensitivity;
-	rotation.x += -motionY * m_sensitivity;
-	rotation.x = glm::clamp(rotation.x, m_pitchRange.x, m_pitchRange.y);
+	rotation.y += motionX * sensitivity;
+	rotation.x += -motionY * sensitivity;
+	rotation.x = glm::clamp(rotation.x, pitchRange.x, pitchRange.y);
 
-	m_transform.SetRotation(rotation);
+	transform.SetRotation(rotation);
 }
 //======================================================================================================
 void OrbitCamera::SendToShader(Shader& shader)
 {
-	m_viewMatrix = glm::lookAt(m_transform.GetPosition(), m_target, m_up);
+	viewMatrix = glm::lookAt(transform.GetPosition(), target, up);
 	Camera::SendToShader(shader);
 }
 //======================================================================================================
@@ -66,10 +66,10 @@ void OrbitCamera::Update(GLfloat deltaTime)
 {
 	glm::vec3 position;
 
-	auto rotation = m_transform.GetEulerAngles();
-	position.x = glm::cos(glm::radians(rotation.y)) * glm::cos(glm::radians(rotation.x)) * m_zoomDistance;
-	position.y = glm::sin(glm::radians(rotation.x)) * m_zoomDistance;
-	position.z = glm::sin(glm::radians(rotation.y)) * glm::cos(glm::radians(rotation.x)) * m_zoomDistance;
+	auto rotation = transform.GetEulerAngles();
+	position.x = glm::cos(glm::radians(rotation.y)) * glm::cos(glm::radians(rotation.x)) * zoomDistance;
+	position.y = glm::sin(glm::radians(rotation.x)) * zoomDistance;
+	position.z = glm::sin(glm::radians(rotation.y)) * glm::cos(glm::radians(rotation.x)) * zoomDistance;
 
-	m_transform.SetPosition(position);
+	transform.SetPosition(position);
 }

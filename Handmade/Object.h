@@ -48,21 +48,21 @@ public:
 protected:
 
 	glm::mat4 GetFinalMatrix();
-	
-	bool m_isLit{ false };
-	bool m_isAlive{ true };
-	bool m_isActive{ true };
-	bool m_isVisible{ true };
-	bool m_isTextured{ false };
 
-	GLuint m_priority{ 0 };
-	glm::vec4 m_color{ 1.0f };
-	glm::mat3 m_normalMatrix{ 1.0f };
+	bool isLit{ false };
+	bool isAlive{ true };
+	bool isActive{ true };
+	bool isVisible{ true };
+	bool isTextured{ false };
 
-	std::string m_tag;
-	Transform m_transform;
+	GLuint priority{ 0 };
+	glm::vec4 color{ 1.0f };
+	glm::mat3 normalMatrix{ 1.0f };
 
-	Object* m_parent{ nullptr };
-	std::vector<Object*> m_children;
+	std::string tag;
+	Transform transform;
+
+	Object* parent{ nullptr };
+	std::vector<Object*> children;
 
 };

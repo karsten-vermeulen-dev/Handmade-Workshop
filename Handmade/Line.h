@@ -30,7 +30,7 @@ public:
 
 private:
 
-	Buffer m_buffer;
-	GLfloat m_lineWidth;
+	Buffer buffer;
+	GLfloat lineWidth;
 
 };

@@ -25,10 +25,10 @@ private:
 
 	void Create();
 
-	GLint m_size;
-	Buffer m_buffer;
-	GLfloat m_lineWidth;
-	bool m_hasSpaceForAxes;
+	Buffer buffer;
+	GLint size{ 0 };
+	GLfloat lineWidth{ 0.0f };
+	bool hasSpaceForAxes{ false };
 
-	const GLuint QUADRANTS = 4;
+	const GLuint quadrants{ 4 };
 };

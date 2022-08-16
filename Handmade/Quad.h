@@ -27,9 +27,9 @@ public:
 
 private:
 
-	static int s_totalQuads;
+	static int totalQuads;
 	
-	Buffer m_buffer;
-	glm::vec2 m_dimension;
+	Buffer buffer;
+	glm::vec2 dimension;
 
 };

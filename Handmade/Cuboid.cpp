@@ -1,22 +1,23 @@
 #include "Cuboid.h"
 #include "Input.h"
 
-int Cuboid::s_totalCuboids = 0;
+int Cuboid::totalCuboids = 0;
+
 //======================================================================================================
 int Cuboid::GetTotalCuboids()
 {
-	return s_totalCuboids;
+	return totalCuboids;
 }
 //======================================================================================================
 Cuboid::Cuboid(const std::string& tag, GLfloat width, GLfloat height, GLfloat depth,
 	GLfloat r, GLfloat g, GLfloat b, GLfloat a)
-	: Object(tag), m_buffer(tag, 36, true)
+	: Object(tag), buffer(tag, 36, true)
 {
-	s_totalCuboids++;
-	m_color = glm::vec4(r, g, b, a);
-	m_dimension = glm::vec3(width, height, depth);
+	totalCuboids++;
+	color = glm::vec4(r, g, b, a);
+	dimension = glm::vec3(width, height, depth);
 
-	glm::vec3 halfDimension = m_dimension * 0.5f;
+	glm::vec3 halfDimension = dimension * 0.5f;
 
 	GLfloat vertices[] = { -halfDimension.x,  halfDimension.y,  halfDimension.z,
 							halfDimension.x,  halfDimension.y,  halfDimension.z,
@@ -116,18 +117,18 @@ Cuboid::Cuboid(const std::string& tag, GLfloat width, GLfloat height, GLfloat de
 	//TODO - Find a way to only create one single 
 	//buffer to be shared amongst subsequent cuboids
 
-	m_buffer.LinkEBO();
-	m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
-	m_buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
-	m_buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
-	m_buffer.FillVBO(Buffer::VBO::NormalBuffer, normals, sizeof(normals), Buffer::Fill::Ongoing);
-	m_buffer.FillEBO(indices, sizeof(indices), Buffer::Fill::Ongoing);
+	buffer.LinkEBO();
+	buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::NormalBuffer, normals, sizeof(normals), Buffer::Fill::Ongoing);
+	buffer.FillEBO(indices, sizeof(indices), Buffer::Fill::Ongoing);
 }
 //======================================================================================================
 Cuboid::~Cuboid()
 {
-	m_buffer.Destroy(m_tag);
-	s_totalCuboids--;
+	buffer.Destroy(tag);
+	totalCuboids--;
 }
 //======================================================================================================
 void Cuboid::SetTextureScale(GLfloat width, GLfloat height)
@@ -145,7 +146,7 @@ void Cuboid::SetTextureScale(GLfloat width, GLfloat height)
 					  0.0f,  height, width, height,
 					  width, 0.0f,   0.0f,  0.0f };   	//bottom face
 
-	m_buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
 }
 //======================================================================================================
 void Cuboid::SetColor(const glm::vec4& color)
@@ -168,8 +169,8 @@ void Cuboid::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 						 r, g, b, a, r, g, b, a,
 						 r, g, b, a, r, g, b, a };     //bottom face 
 
-	m_buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
-	m_color = glm::vec4(r, g, b, a);
+	buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
+	color = glm::vec4(r, g, b, a);
 }
 //======================================================================================================
 void Cuboid::SetDimension(const glm::vec3& dimension)
@@ -179,8 +180,8 @@ void Cuboid::SetDimension(const glm::vec3& dimension)
 //======================================================================================================
 void Cuboid::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 {
-	m_dimension = glm::vec3(width, height, depth);
-	glm::vec3 halfDimension = m_dimension * 0.5f;
+	dimension = glm::vec3(width, height, depth);
+	glm::vec3 halfDimension = dimension * 0.5f;
 
 	GLfloat vertices[] = { -halfDimension.x,  halfDimension.y,  halfDimension.z,
 							halfDimension.x,  halfDimension.y,  halfDimension.z,
@@ -212,27 +213,27 @@ void Cuboid::SetDimension(GLfloat width, GLfloat height, GLfloat depth)
 							halfDimension.x, -halfDimension.y,  halfDimension.z,
 						   -halfDimension.x, -halfDimension.y,  halfDimension.z };    //Bottom face
 
-	m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
 }
 //======================================================================================================
 void Cuboid::Render(Shader& shader)
 {
 	//TODO - Find a way to do this only once
-	m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
-	m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
+	buffer.LinkVBO(shader.GetAttributeID("textureIn"),
 		Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
-	//m_buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+	// buffer.LinkVBO(shader.GetAttributeID("normalIn"),
 		//Buffer::VBO::ColorBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 
-	m_normalMatrix = glm::inverse(glm::mat3(m_transform.GetMatrix()));
+	normalMatrix = glm::inverse(glm::mat3(transform.GetMatrix()));
 
-	//shader.SendData("normal", m_normalMatrix);
+	//shader.SendData("normal",  normalMatrix);
 
 	shader.SendData("model", GetFinalMatrix());
-	shader.SendData("isTextured", static_cast<GLuint>(m_isTextured));
+	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
 
-	m_buffer.Render(Buffer::RenderMode::Triangles);
+	buffer.Render(Buffer::RenderMode::Triangles);
 }

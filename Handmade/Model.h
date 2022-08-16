@@ -53,20 +53,17 @@ class Model : public Object
 
 public:
 
-	static bool Load(const std::string& tag,
-		const std::string& filename,
-		bool isNormalized = false,
-		const std::string& defaultMaterial = "Chrome");
-
-	static void Unload(const std::string& tag = "");
-	static void SetRootFolder(const std::string& rootFolder);
-
 	Model(const std::string& tag = "",
 		const std::string& filename = "",
 		bool isNormalized = false,
 		const std::string& defaultMaterial = "Chrome");
 
-	virtual ~Model() {}
+	bool Load(const std::string& tag,
+		const std::string& filename,
+		bool isNormalized = false,
+		const std::string& defaultMaterial = "Chrome");
+
+	void Unload(const std::string& tag = "");
 
 	const glm::vec3& GetDimension() const;
 
@@ -81,23 +78,23 @@ public:
 
 private:
 
-	static void Normalize(Model& model);
-	static void FillBuffers(Model& model);
-	static void SortVertexData(Mesh& newMesh, const Mesh& oldMesh,
+	void Normalize();
+	void FillBuffers();
+	void SortVertexData(Mesh& newMesh, const Mesh& oldMesh,
 		const std::vector<Face>& faces);
 
-	glm::vec3 m_dimension{ 0.0f };
+	glm::vec3 dimension{ 0.0f };
 
 	//There should always be the same amount 
 	//of buffers as there are mesh groups
-	std::vector<Mesh> m_meshes;
-	std::vector<Buffer> m_buffers;
+	std::vector<Mesh> meshes;
+	std::vector<Buffer> buffers;
 
 	//These are all the materials loaded from the .mtl file
 	//This is an entire group of materials for the model
-	Material m_material;
+	Material material;
 
-	static std::string s_rootFolder;
-	static std::map<std::string, Model> s_models;
+	static std::string rootFolder;
+	static std::map<std::string, Model> models;
 
 };

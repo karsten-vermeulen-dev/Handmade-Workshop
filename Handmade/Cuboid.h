@@ -27,9 +27,9 @@ public:
 
 private:
 
-	static int s_totalCuboids;
+	static int totalCuboids;
 
-	Buffer m_buffer;
-	glm::vec3 m_dimension;
+	Buffer buffer;
+	glm::vec3 dimension;
 
 };

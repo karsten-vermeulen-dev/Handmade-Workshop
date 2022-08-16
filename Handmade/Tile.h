@@ -36,23 +36,23 @@ public:
 
 private:
 
-	bool m_isAnimated = false;
-	bool m_isAnimationDead = false;
-	bool m_isAnimationLooping = false;
-	bool m_isAnimationLoopFinal = false;
+	bool isAnimated{ false };
+	bool isAnimationDead{ false };
+	bool isAnimationLooping{ false };
+	bool isAnimationLoopFinal{ false };
 
-	GLuint m_tileIndex{ 0 };
-	GLuint m_spriteSheetCol;
-	GLuint m_spriteSheetRow;
-	GLfloat m_animationVelocity{ 0.1f };
+	GLuint tileIndex{ 0 };
+	GLuint spriteSheetCol{ 0 };
+	GLuint spriteSheetRow{ 0 };
+	GLfloat animationVelocity{ 0.1f };
 
-	Buffer m_buffer;
-	Texture m_texture;
+	Buffer buffer;
+	Texture texture;
 
-	glm::vec2 m_dimension;
-	glm::vec4 m_color{ 1.0f };
+	glm::vec4 color{ 1.0f };
+	glm::vec2 dimension{ 0.0f };
 
-	const GLuint CORNERS = 4;
-	const GLuint VERTICES_PER_TILE = 6;
+	const GLuint corners{ 4 };
+	const GLuint verticesPerTile{ 6 };
 
 };

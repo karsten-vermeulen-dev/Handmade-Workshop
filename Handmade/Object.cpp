@@ -4,111 +4,111 @@
 #include "Shader.h"
 
 //======================================================================================================
-Object::Object(const std::string& tag) : m_tag(tag) {}
+Object::Object(const std::string& tag) : tag(tag) {}
 //======================================================================================================
 bool Object::IsLit() const
 {
-	return m_isLit;
+	return isLit;
 }
 //======================================================================================================
 bool Object::IsAlive() const
 {
-	return m_isAlive;
+	return isAlive;
 }
 //======================================================================================================
 bool Object::IsActive() const
 {
-	return m_isActive;
+	return isActive;
 }
 //======================================================================================================
 bool Object::IsVisible() const
 {
-	return m_isVisible;
+	return isVisible;
 }
 //======================================================================================================
 bool Object::IsTextured() const
 {
-	return m_isTextured;
+	return isTextured;
 }
 //======================================================================================================
 void Object::IsLit(bool flag)
 {
-	m_isLit = flag;
+	isLit = flag;
 }
 //======================================================================================================
 void Object::IsAlive(bool flag)
 {
-	m_isAlive = flag;
+	isAlive = flag;
 }
 //======================================================================================================
 void Object::IsActive(bool flag)
 {
-	m_isActive = flag;
+	isActive = flag;
 }
 //======================================================================================================
 void Object::IsVisible(bool flag)
 {
-	m_isVisible = flag;
+	isVisible = flag;
 }
 //======================================================================================================
 void Object::IsTextured(bool flag)
 {
-	m_isTextured = flag;
+	isTextured = flag;
 }
 //======================================================================================================
 GLuint Object::GetPriority() const
 {
-	return m_priority;
+	return priority;
 }
 //======================================================================================================
 const std::string& Object::GetTag() const
 {
-	return m_tag;
+	return tag;
 }
 //======================================================================================================
 const glm::vec4& Object::GetColor() const
 {
-	return m_color;
+	return color;
 }
 //======================================================================================================
 const std::vector<Object*>& Object::GetChildren() const
 {
-	return m_children;
+	return children;
 }
 //======================================================================================================
 Transform& Object::GetTransform()
 {
-	return m_transform;
+	return transform;
 }
 //======================================================================================================
 void Object::SetPriority(GLuint priority)
 {
-	m_priority = priority;
+	this->priority = priority;
 }
 //======================================================================================================
 void Object::SetTag(const std::string& tag)
 {
-	m_tag = tag;
+	this->tag = tag;
 }
 //======================================================================================================
 void Object::AddChild(Object* child)
 {
-	assert(child->m_parent == nullptr);
-	m_children.emplace_back(child);
-	m_children.back()->m_parent = this;
+	assert(child->parent == nullptr);
+	children.emplace_back(child);
+	children.back()->parent = this;
 }
 //======================================================================================================
 glm::mat4 Object::GetFinalMatrix()
 {
 	std::deque<glm::mat4> matrices;
-	matrices.emplace_front(m_transform.GetMatrix());
+	matrices.emplace_front(transform.GetMatrix());
 
-	auto parent = m_parent;
+	auto parent = this->parent;
 
 	while (parent)
 	{
 		matrices.emplace_front(parent->GetTransform().GetMatrix());
-		parent = parent->m_parent;
+		parent = parent->parent;
 	}
 
 	auto finalMatrix = glm::mat4(1.0f);

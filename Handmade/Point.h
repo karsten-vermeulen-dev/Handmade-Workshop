@@ -26,7 +26,7 @@ public:
 
 private:
 
-	Buffer m_buffer;
-	GLfloat m_pointSize;
+	Buffer buffer;
+	GLfloat pointSize;
 
 };

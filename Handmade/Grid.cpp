@@ -6,30 +6,31 @@
 //Note:
 //We multiply by 2 to represent each line's vertex 
 //and add 4 for the two extra lines to close the grid
-//m_buffer("Grid", (size * 4 * 2) + 4) 
+// buffer("Grid", (size * 4 * 2) + 4) 
+
 //======================================================================================================
 Grid::Grid(const std::string& tag, bool hasSpaceForAxes, GLint size, GLfloat lineWidth)
-	: Object(tag), m_size(size), m_buffer(tag, (size * 4 * 2) + 4), //TODO - Remove magic numbers
-	m_lineWidth(lineWidth), m_hasSpaceForAxes(hasSpaceForAxes)  //QUADRANTS = 4
+	: Object(tag), size(size), buffer(tag, (size * 4 * 2) + 4), //TODO - Remove magic numbers
+	lineWidth(lineWidth), hasSpaceForAxes(hasSpaceForAxes)  //QUADRANTS = 4
 {
 	Create();
 }
 //======================================================================================================
 Grid::~Grid()
 {
-	m_buffer.Destroy(m_tag);
+	buffer.Destroy(tag);
 }
 //======================================================================================================
 void Grid::SetSize(GLint size)
 {
-	m_size = size;
-	m_size = std::max(m_size, 1);
+	size = size;
+	size = std::max(size, 1);
 	Create();
 }
 //======================================================================================================
 void Grid::SetLineWidth(GLfloat lineWidth)
 {
-	m_lineWidth = lineWidth;
+	this->lineWidth = lineWidth;
 }
 //======================================================================================================
 void Grid::SetColor(const glm::vec4& color)
@@ -41,54 +42,55 @@ void Grid::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 {
 	GLuint offset = 0;
 
-	for (auto i = 0; i < m_size * (GLint)QUADRANTS; i++)
+	for (auto i = 0; i < size * (GLint)quadrants; i++)
 	{
 		GLfloat colors[] = { r, g, b, a, r, g, b, a };
-		m_buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offset);
+		buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offset);
 		offset += sizeof(colors);
 	}
-	m_color = glm::vec4(r, g, b, a);
+	color = glm::vec4(r, g, b, a);
 }
 //======================================================================================================
 void Grid::Render(Shader& shader)
 {
-	Buffer::SetLineWidth(m_lineWidth);
+	Buffer::SetLineWidth(lineWidth);
 
 	//TODO - Find a way to do this only once
-	m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::IntData);
-	m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 
 	shader.SendData("isTextured", false);
 	shader.SendData("model", GetFinalMatrix());
 
-	m_buffer.Render(Buffer::RenderMode::Lines);
+	buffer.Render(Buffer::RenderMode::Lines);
 }
 //======================================================================================================
 void Grid::Create()
 {
 	//We need to add an extra line to close the grid 
 	//Each line has two vertex and two color groups
-	const GLuint BYTES_PER_VERTEX =
+	const GLuint bytesPerVertex =
 		static_cast<GLuint>(Buffer::ComponentSize::XYZ) * sizeof(GLint);
-	const GLuint BYTES_PER_COLOR =
+	const GLuint bytesPerColor =
 		static_cast<GLuint>(Buffer::ComponentSize::RGBA) * sizeof(GLfloat);
 
-	const GLuint TOTAL_BYTES_VERTEX_VBO = (m_size + 1) * QUADRANTS * BYTES_PER_VERTEX * 2;
-	const GLuint TOTAL_BYTES_COLOR_VBO = (m_size + 1) * QUADRANTS * BYTES_PER_COLOR * 2;
+	const GLuint maxBytesVertexVBO = (size + 1) * quadrants * bytesPerVertex * 2;
+	const GLuint maxBytesColorVBO = (size + 1) * quadrants * bytesPerColor * 2;
 
+	//TODO - Fix this
 	//We don't want to create new buffer 
 	//objects everytime the grid is resized
-	/*if (!m_buffer.GetTag().empty())
+	/*if (! buffer.GetTag().empty())
 	{
-		m_buffer.Destroy();
+		 buffer.Destroy();
 	}*/
 
-	m_buffer.FillVBO(Buffer::VBO::VertexBuffer,
-		(GLfloat*)nullptr, TOTAL_BYTES_VERTEX_VBO, Buffer::Fill::Ongoing);
-	m_buffer.FillVBO(Buffer::VBO::ColorBuffer,
-		(GLfloat*)nullptr, TOTAL_BYTES_COLOR_VBO, Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::VertexBuffer,
+		(GLfloat*)nullptr, maxBytesVertexVBO, Buffer::Fill::Ongoing);
+	buffer.FillVBO(Buffer::VBO::ColorBuffer,
+		(GLfloat*)nullptr, maxBytesColorVBO, Buffer::Fill::Ongoing);
 
 	GLuint offsetColor = 0;
 	GLuint offsetVertex = 0;
@@ -97,75 +99,75 @@ void Grid::Create()
 	//Negative vertical lines
 	//==================================
 
-	for (int i = 0; m_hasSpaceForAxes ? i < m_size : i <= m_size; i++)
+	for (int i = 0; hasSpaceForAxes ? i < size : i <= size; i++)
 	{
-		GLint vertices[] = { -m_size + i, 0,  m_size,      //first vertex
-							 -m_size + i, 0, -m_size };    //second vertex
+		GLint vertices[] = { -size + i, 0,   size,      //first vertex
+							 -size + i, 0, -size };     //second vertex
 
 		GLfloat colors[] = { 0.5f, 0.5f, 0.5f, 0.5f,
 							 0.5f, 0.5f, 0.5f, 0.5f };
 
-		m_buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
-		m_buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
+		buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
+		buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
 
-		offsetVertex += BYTES_PER_VERTEX * 2;
-		offsetColor += BYTES_PER_COLOR * 2;
+		offsetVertex += bytesPerVertex * 2;
+		offsetColor += bytesPerColor * 2;
 	}
 
 	//==================================
 	//Positive vertical lines
 	//==================================
 
-	for (int i = 1; i < m_size + 1; i++)
+	for (int i = 1; i < size + 1; i++)
 	{
-		GLint vertices[] = { 0 + i, 0,  m_size,      //first vertex
-							 0 + i, 0, -m_size };    //second vertex
+		GLint vertices[] = { 0 + i, 0,   size,      //first vertex
+							 0 + i, 0, -size };     //second vertex
 
 		GLfloat colors[] = { 0.5f, 0.5f, 0.5f, 0.5f,
 							 0.5f, 0.5f, 0.5f, 0.5f };
 
-		m_buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
-		m_buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
+		buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
+		buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
 
-		offsetVertex += BYTES_PER_VERTEX * 2;
-		offsetColor += BYTES_PER_COLOR * 2;
+		offsetVertex += bytesPerVertex * 2;
+		offsetColor += bytesPerColor * 2;
 	}
 
 	//==================================
 	//Negative horizontal lines
 	//==================================
 
-	for (int i = 0; m_hasSpaceForAxes ? i < m_size : i <= m_size; i++)
+	for (int i = 0; hasSpaceForAxes ? i < size : i <= size; i++)
 	{
-		GLint vertices[] = { -m_size, 0, -m_size + i,        //first vertex
-							  m_size, 0, -m_size + i };     //second vertex
+		GLint vertices[] = { -size, 0, -size + i,        //first vertex
+							   size, 0, -size + i };     //second vertex
 
 		GLfloat colors[] = { 0.5f, 0.5f, 0.5f, 0.5f,
 							 0.5f, 0.5f, 0.5f, 0.5f };
 
-		m_buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
-		m_buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
+		buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
+		buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
 
-		offsetVertex += BYTES_PER_VERTEX * 2;
-		offsetColor += BYTES_PER_COLOR * 2;
+		offsetVertex += bytesPerVertex * 2;
+		offsetColor += bytesPerColor * 2;
 	}
 
 	//==================================
 	//Positive horizontal lines
 	//==================================
 
-	for (int i = 1; i < m_size + 1; i++)
+	for (int i = 1; i < size + 1; i++)
 	{
-		GLint vertices[] = { -m_size, 0, 0 + i,     //first vertex
-							  m_size, 0, 0 + i };     //second vertex
+		GLint vertices[] = { -size, 0, 0 + i,		//first vertex
+							   size, 0, 0 + i };	//second vertex
 
 		GLfloat colors[] = { 0.5f, 0.5f, 0.5f, 0.5f,
 							 0.5f, 0.5f, 0.5f, 0.5f };
 
-		m_buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
-		m_buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
+		buffer.AppendVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), offsetVertex);
+		buffer.AppendVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), offsetColor);
 
-		offsetVertex += BYTES_PER_VERTEX * 2;
-		offsetColor += BYTES_PER_COLOR * 2;
+		offsetVertex += bytesPerVertex * 2;
+		offsetColor += bytesPerColor * 2;
 	}
 }

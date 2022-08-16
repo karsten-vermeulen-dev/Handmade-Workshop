@@ -3,79 +3,80 @@
 #include "Input.h"
 #include "Shader.h"
 
-GLuint Axes::s_totalObjects = 0;
+GLuint Axes::totalObjects = 0;
+
 //======================================================================================================
-Axes::Axes(const std::string& tag, const std::string& filenameModel) : Object(tag), m_model(tag)
+Axes::Axes(const std::string& tag, const std::string& filenameModel) : Object(tag), model(tag)
 {
-	m_model.Load(tag, filenameModel, true);
-	m_model.SetModel(tag);
+	model.Load(tag, filenameModel, true);
+	model.SetModel(tag);
 }
 //======================================================================================================
 Axes::Axes(const std::string& tag, GLint size, GLfloat lineWidth)
-	: Object(tag), m_size(size), m_lineWidth(lineWidth), m_isPrimitive(true), m_model(tag), m_buffer(tag, 6)
+	: Object(tag), size(size), lineWidth(lineWidth), isPrimitive(true), model(tag), buffer(tag, 6)
 {
 	Create();
 }
 //======================================================================================================
 Axes::~Axes()
 {
-	m_buffer.Destroy(m_tag);
+	buffer.Destroy(tag);
 }
 //======================================================================================================
 void Axes::SetSize(GLint size)
 {
-	m_size = size;
-	m_size = std::max(m_size, 1);
+	size = size;
+	size = std::max(size, 1);
 	Create();
 }
 //======================================================================================================
 void Axes::SetLineWidth(GLfloat lineWidth)
 {
-	m_lineWidth = lineWidth;
+	this->lineWidth = lineWidth;
 }
 //======================================================================================================
 const glm::vec3& Axes::GetArrowTipPositionX() const
 {
-	return m_arrowTipPositionX;
+	return arrowTipPositionX;
 }
 //======================================================================================================
 const glm::vec3& Axes::GetArrowTipPositionY() const
 {
-	return m_arrowTipPositionY;
+	return arrowTipPositionY;
 }
 //======================================================================================================
 const glm::vec3& Axes::GetArrowTipPositionZ() const
 {
-	return m_arrowTipPositionZ;
+	return arrowTipPositionZ;
 }
 //======================================================================================================
 void Axes::Render(Shader& shader)
 {
-	if (m_isPrimitive)
+	if (isPrimitive)
 	{
-		Buffer::SetLineWidth(m_lineWidth);
+		Buffer::SetLineWidth(lineWidth);
 
 		//TODO - Find a way to do this only once
-		m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+		buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 			Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::IntData);
-		m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+		buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 			Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 
 		shader.SendData("isTextured", false);
-		shader.SendData("model", m_transform.GetMatrix());
+		shader.SendData("model", transform.GetMatrix());
 
-		m_buffer.Render(Buffer::RenderMode::Lines);
+		buffer.Render(Buffer::RenderMode::Lines);
 	}
 
 	else
 	{
-		m_model.GetTransform() = m_transform;
-		m_model.Render(shader);
+		model.GetTransform() = transform;
+		model.Render(shader);
 	}
 
-	m_arrowTipPositionX = m_transform.GetRotation() * glm::vec3(0.9f, 0.0f, 0.0f);
-	m_arrowTipPositionY = m_transform.GetRotation() * glm::vec3(0.0f, 0.9f, 0.0f);
-	m_arrowTipPositionZ = m_transform.GetRotation() * glm::vec3(0.0f, 0.0f, -0.9f);
+	arrowTipPositionX = transform.GetRotation() * glm::vec3(0.9f, 0.0f, 0.0f);
+	arrowTipPositionY = transform.GetRotation() * glm::vec3(0.0f, 0.9f, 0.0f);
+	arrowTipPositionZ = transform.GetRotation() * glm::vec3(0.0f, 0.0f, -0.9f);
 }
 //======================================================================================================
 void Axes::Create()
@@ -84,14 +85,14 @@ void Axes::Create()
 	//objects everytime the axes are resized
 	//TODO - Implement RAII properly
 
-	GLint vertices[] = { -m_size, 0, 0, m_size, 0, 0,
-						  0, -m_size, 0, 0, m_size, 0,
-						  0, 0, -m_size, 0, 0, m_size };
+	GLint vertices[] = { -size, 0, 0,  size, 0, 0,
+						  0, -size, 0, 0,  size, 0,
+						  0, 0, -size, 0, 0,  size };
 
 	GLfloat colors[] = { 1.0f, 0.0f, 0.196f, 1.0f, 1.0f, 0.0f, 0.196f, 1.0f,
 						 0.196f, 1.0f, 0.0f, 1.0f, 0.196f, 1.0f, 0.0f, 1.0f,
 						 0.0f, 0.564f, 1.0f, 1.0f, 0.0f, 0.564f, 1.0f, 1.0f };
 
-	m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Once);
-	m_buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Once);
+	buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Once);
+	buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Once);
 }

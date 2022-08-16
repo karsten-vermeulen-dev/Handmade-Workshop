@@ -37,18 +37,18 @@ public:
 
 private:
 
-	static GLuint s_totalLights;
+	static GLuint totalLights;
 
-	GLuint m_lightNumber{ s_totalLights++ };
+	GLuint lightNumber{ totalLights++ };
 
-	GLfloat m_attenuationLinear{ 0.05f };
-	GLfloat m_attenuationConstant{ 0.2f };
-	GLfloat m_attenuationQuadratic{ 0.05f };
+	GLfloat attenuationLinear{ 0.05f };
+	GLfloat attenuationConstant{ 0.2f };
+	GLfloat attenuationQuadratic{ 0.05f };
 
-	glm::vec3 m_ambient{ 1.0f };
-	glm::vec3 m_diffuse{ 1.0f };
-	glm::vec3 m_specular{ 1.0f };
+	glm::vec3 ambient{ 1.0f };
+	glm::vec3 diffuse{ 1.0f };
+	glm::vec3 specular{ 1.0f };
 
-	Buffer m_buffer;
+	Buffer buffer;
 
 };

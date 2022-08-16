@@ -31,9 +31,9 @@ public:
 
 private:
 
-	bool m_isFlying{ true };
-	GLfloat m_sensitivity{ 0.0f };
-	glm::vec2 m_pitchRange{ -89.0f, 89.0f };
-	GLfloat m_clampedYPosition{ 1.0f };
+	bool isFlying{ true };
+	GLfloat sensitivity{ 0.0f };
+	GLfloat clampedYPosition{ 1.0f };
+	glm::vec2 pitchRange{ -89.0f, 89.0f };
 
 };

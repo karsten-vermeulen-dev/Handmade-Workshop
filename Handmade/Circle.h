@@ -24,10 +24,10 @@ public:
 
 private:
 
-	static int s_totalCircles;
+	static int totalCircles;
 
-	GLuint m_slices;
-	GLfloat m_radius;
-	Buffer m_buffer;
+	GLuint slices;
+	GLfloat radius;
+	Buffer buffer;
 
 };

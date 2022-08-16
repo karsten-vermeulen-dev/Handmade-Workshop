@@ -5,8 +5,6 @@
 #include "Buffer.h"
 #include "Object.h"
 
-const GLuint TOTAL_ASCII_CHARACTERS = 128;
-
 class Text : public Object
 {
 
@@ -15,19 +13,16 @@ public:
 	static bool Initialize();
 	static void Shutdown();
 
-	static bool Load(const std::string& tag,
-		const std::string& filename, GLuint fontSize);
-	static void Unload(const std::string& tag = "");
-
-	static void SetRootFolder(const std::string& rootFolder);
-
-	Text(const std::string& tag, 
+	Text(const std::string& tag,
 		const std::string& filename = "", GLuint fontSize = 10U);
-	Text(const Text& copy);
 	virtual ~Text();
 
-	GLuint GetFontSize();
+	bool Load(const std::string& tag,
+		const std::string& filename, GLuint fontSize);
+	void Unload(const std::string& tag = "");
+
 	GLuint GetTotalWidth();
+	GLuint GetFontSize() const;
 	const std::string& GetString() const;
 
 	void SetFont(const std::string& tag);
@@ -35,7 +30,7 @@ public:
 	void AppendString(const std::string& string);
 
 	void IsFirstLetterCentered(bool flag);
-	
+
 	virtual void SetColor(const glm::vec4& color);
 	virtual void SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a = 1.0f);
 
@@ -44,6 +39,8 @@ public:
 	virtual void SendToShader(Shader& shader);
 
 private:
+
+	const GLuint totalASCIICharacters = 128;
 
 	struct Glyph
 	{
@@ -58,19 +55,19 @@ private:
 	//Would love to call it 'Font' but that name is reserved
 	typedef std::map<GLchar, Glyph> FontType;
 
-	FontType m_font;
-	Buffer m_buffer{ "Text_" + std::to_string(++s_totalObjects), 6, true };
+	FontType font;
+	Buffer buffer{ "Text_" + std::to_string(++totalObjects), 6, true };
 
-	GLuint m_fontSize;
-	GLuint m_totalWidth{ 0 };
-	glm::vec4 m_color{ 1.0f, 1.0f, 1.0f, 1.0f };
+	GLuint fontSize;
+	GLuint totalWidth{ 0 };
+	glm::vec4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-	std::string m_string;
-	bool m_isFirstLetterCentered{ false };
+	std::string string;
+	bool isFirstLetterCentered{ false };
 
-	static GLuint s_totalObjects;
-	static std::string s_rootFolder;
-	static FT_Library s_freetypeObject;
-	static std::map<std::string, FontType> s_fonts;
+	static GLuint totalObjects;
+	static std::string rootFolder;
+	static FT_Library freetypeObject;
+	static std::map<std::string, FontType> fonts;
 
 };

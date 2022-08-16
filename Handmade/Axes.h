@@ -29,17 +29,17 @@ private:
 
 	void Create();
 
-	GLint m_size{ 0 };
-	GLfloat m_lineWidth{ 0.0f };
-	bool m_isPrimitive{ false };
+	GLint size{ 0 };
+	GLfloat lineWidth{ 0.0f };
+	bool isPrimitive{ false };
 
-	glm::vec3 m_arrowTipPositionX{ 0.0f };
-	glm::vec3 m_arrowTipPositionY{ 0.0f };
-	glm::vec3 m_arrowTipPositionZ{ 0.0f };
+	glm::vec3 arrowTipPositionX{ 0.0f };
+	glm::vec3 arrowTipPositionY{ 0.0f };
+	glm::vec3 arrowTipPositionZ{ 0.0f };
 
-	Model m_model;
-	Buffer m_buffer;
+	Model model;
+	Buffer buffer;
 
-	static GLuint s_totalObjects;
+	static GLuint totalObjects;
 
 };

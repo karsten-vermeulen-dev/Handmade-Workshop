@@ -3,15 +3,15 @@
 #include "Text.h"
 #include "Utility.h"
 
-GLuint Text::s_totalObjects = 0;
-FT_Library Text::s_freetypeObject = nullptr;
-std::string Text::s_rootFolder = "Assets/Fonts/";
-std::map<std::string, Text::FontType> Text::s_fonts;
+GLuint Text::totalObjects = 0;
+FT_Library Text::freetypeObject = nullptr;
+std::string Text::rootFolder = "Assets/Fonts/";
+std::map<std::string, Text::FontType> Text::fonts;
 
 //================================================================================================
 bool Text::Initialize()
 {
-	if (FT_Init_FreeType(&s_freetypeObject))
+	if (FT_Init_FreeType(&freetypeObject))
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
 			"Error initializing the FreeType font system.", Utility::Severity::Failure);
@@ -23,19 +23,19 @@ bool Text::Initialize()
 //================================================================================================
 void Text::Shutdown()
 {
-	Unload();
-	FT_Done_FreeType(s_freetypeObject);
+	//Unload();
+	FT_Done_FreeType(freetypeObject);
 }
 //================================================================================================
 bool Text::Load(const std::string& tag, const std::string& filename, GLuint fontSize)
 {
-	assert(s_fonts.find(tag) == s_fonts.end());
+	assert(fonts.find(tag) == fonts.end());
 	FT_Face freetypeFace = nullptr;
 
-	if (FT_New_Face(s_freetypeObject, (s_rootFolder + filename).c_str(), 0, &freetypeFace))
+	if (FT_New_Face(freetypeObject, (rootFolder + filename).c_str(), 0, &freetypeFace))
 	{
 		Utility::Log(Utility::Destination::WindowsMessageBox,
-			"Error loading font file \"" + (s_rootFolder + filename) + "\"\n\n"
+			"Error loading font file \"" + (rootFolder + filename) + "\"\n\n"
 			"Possible causes could be a corrupt or missing file. Another reason could be "
 			"that the filename and/or path are incorrectly spelt.", Utility::Severity::Failure);
 
@@ -48,10 +48,10 @@ bool Text::Load(const std::string& tag, const std::string& filename, GLuint font
 	//because the freetype glyph textures only use 1 byte of color data
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	FontType font;
+	//FontType font;
 
 	//Generate a glyph for all 128 ASCII characters
-	for (int i = 0; i < TOTAL_ASCII_CHARACTERS; i++)
+	for (int i = 0; i < totalASCIICharacters; i++)
 	{
 		if (FT_Load_Char(freetypeFace, i, FT_LOAD_RENDER))
 		{
@@ -94,7 +94,7 @@ bool Text::Load(const std::string& tag, const std::string& filename, GLuint font
 	}
 
 	FT_Done_Face(freetypeFace);
-	s_fonts[tag] = font;
+	fonts[tag] = font;
 	return true;
 }
 //================================================================================================
@@ -102,20 +102,20 @@ void Text::Unload(const std::string& tag)
 {
 	if (!tag.empty())
 	{
-		auto it = s_fonts.find(tag);
-		assert(it != s_fonts.end());
+		auto it = fonts.find(tag);
+		assert(it != fonts.end());
 
 		for (const auto& glyph : it->second)
 		{
 			glDeleteTextures(1, &glyph.second.ID);
 		}
 
-		s_fonts.erase(it);
+		fonts.erase(it);
 	}
 
 	else
 	{
-		for (auto& font : s_fonts)
+		for (auto& font : fonts)
 		{
 			for (const auto& glyph : font.second)
 			{
@@ -123,19 +123,14 @@ void Text::Unload(const std::string& tag)
 			}
 		}
 
-		s_fonts.clear();
+		fonts.clear();
 	}
 }
 //================================================================================================
-void Text::SetRootFolder(const std::string& rootFolder)
-{
-	s_rootFolder = rootFolder;
-}
-//================================================================================================
 Text::Text(const std::string& tag, const std::string& filename, GLuint fontSize)
-	: Object(tag), m_fontSize(fontSize)
+	: Object(tag), fontSize(fontSize)
 {
-	m_buffer.LinkEBO();
+	buffer.LinkEBO();
 
 	if (!filename.empty())
 	{
@@ -149,63 +144,50 @@ Text::Text(const std::string& tag, const std::string& filename, GLuint fontSize)
 	}
 }
 //================================================================================================
-//TODO - Do we really need a copy ctor?
-Text::Text(const Text& copy)
-	: Object(copy.m_tag), m_buffer(copy.m_tag + "_copy", 6, true)
-{
-	m_buffer.LinkEBO();
-	m_font = copy.m_font;
-	m_color = copy.m_color;
-	m_string = copy.m_string;
-	m_fontSize = copy.m_fontSize;
-	m_totalWidth = copy.m_totalWidth;
-	m_isFirstLetterCentered = copy.m_isFirstLetterCentered;
-}
-//================================================================================================
 Text::~Text()
 {
-	m_font.clear();
-	m_buffer.Destroy(m_buffer.GetTag());
+	font.clear();
+	buffer.Destroy(buffer.GetTag());
 }
 //================================================================================================
-GLuint Text::GetFontSize()
+GLuint Text::GetFontSize() const
 {
-	return m_fontSize;
+	return fontSize;
 }
 //================================================================================================
 GLuint Text::GetTotalWidth()
 {
-	m_totalWidth = 0;
+	totalWidth = 0;
 
-	for (const auto& character : m_string)
+	for (const auto& character : string)
 	{
-		m_totalWidth += m_font[character].advance / 64;
+		totalWidth += font[character].advance / 64;
 	}
 
-	return m_totalWidth;
+	return totalWidth;
 }
 //================================================================================================
 const std::string& Text::GetString() const
 {
-	return m_string;
+	return string;
 }
 //================================================================================================
 void Text::SetFont(const std::string& tag)
 {
-	auto it = s_fonts.find(tag);
-	assert(it != s_fonts.end());
-	m_font = it->second;
-	m_tag = tag;
+	auto it = fonts.find(tag);
+	assert(it != fonts.end());
+	font = it->second;
+	this->tag = tag;
 }
 //================================================================================================
 void Text::SetString(const std::string& string)
 {
-	m_string = string;
+	this->string = string;
 }
 //================================================================================================
 void Text::AppendString(const std::string& string)
 {
-	m_string += string;
+	this->string += string;
 }
 //================================================================================================
 void Text::SetColor(const glm::vec4& color)
@@ -215,34 +197,34 @@ void Text::SetColor(const glm::vec4& color)
 //================================================================================================
 void Text::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 {
-	m_color = glm::vec4(r, g, b, a);
+	color = glm::vec4(r, g, b, a);
 }
 //================================================================================================
 void Text::IsFirstLetterCentered(bool flag)
 {
-	m_isFirstLetterCentered = flag;
+	isFirstLetterCentered = flag;
 }
 //================================================================================================
 void Text::Render(Shader& shader)
 {
-	assert(!m_tag.empty());
+	assert(!tag.empty());
 
 	glm::vec2 textOrigin = glm::vec2(0.0f);
 
-	for (const auto& character : m_string)
+	for (const auto& character : string)
 	{
-		Glyph glyph = m_font[character];
+		Glyph glyph = font[character];
 
 		auto halfWidth = glyph.width * 0.5f;
 		auto halfBearingY = glyph.bearingY * 0.5f;
 
-		if (m_isFirstLetterCentered)
+		if (isFirstLetterCentered)
 		{
 			GLfloat vertices[] = { textOrigin.x - halfWidth, textOrigin.y + halfBearingY, 0.0f,
 				textOrigin.x + halfWidth, textOrigin.y + halfBearingY, 0.0f,
 				textOrigin.x + halfWidth, textOrigin.y + halfBearingY - (GLfloat)glyph.height, 0.0f,
 				textOrigin.x - halfWidth, textOrigin.y + halfBearingY - (GLfloat)glyph.height, 0.0f };
-			m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
+			buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
 		}
 
 		else
@@ -251,13 +233,13 @@ void Text::Render(Shader& shader)
 				textOrigin.x + (GLfloat)glyph.bearingX + (GLfloat)glyph.width, (GLfloat)glyph.bearingY, 0.0f,
 				textOrigin.x + (GLfloat)glyph.bearingX + (GLfloat)glyph.width, (GLfloat)glyph.bearingY - (GLfloat)glyph.height, 0.0f,
 				textOrigin.x + (GLfloat)glyph.bearingX, (GLfloat)glyph.bearingY - (GLfloat)glyph.height, 0.0f };
-			m_buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
+			buffer.FillVBO(Buffer::VBO::VertexBuffer, vertices, sizeof(vertices), Buffer::Fill::Ongoing);
 		}
 
-		GLfloat colors[] = { m_color.r, m_color.g, m_color.b, m_color.a,
-			m_color.r, m_color.g, m_color.b, m_color.a,
-			m_color.r, m_color.g, m_color.b, m_color.a,
-			m_color.r, m_color.g, m_color.b, m_color.a };
+		GLfloat colors[] = { color.r,    color.g,    color.b,    color.a,
+			   color.r,    color.g,    color.b,    color.a,
+			   color.r,    color.g,    color.b,    color.a,
+			   color.r,    color.g,    color.b,    color.a };
 
 		GLfloat UVs[] = { 0.0f, 0.0f,
 			1.0f, 0.0f,
@@ -267,21 +249,21 @@ void Text::Render(Shader& shader)
 		GLuint indices[] = { 0, 1, 3,
 			3, 1, 2 };
 
-		m_buffer.FillEBO(indices, sizeof(indices));
-		m_buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
-		m_buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
+		buffer.FillEBO(indices, sizeof(indices));
+		buffer.FillVBO(Buffer::VBO::TextureBuffer, UVs, sizeof(UVs), Buffer::Fill::Ongoing);
+		buffer.FillVBO(Buffer::VBO::ColorBuffer, colors, sizeof(colors), Buffer::Fill::Ongoing);
 
 		//TODO - Find a way to do this only once
-		m_buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
+		buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 			Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
-		m_buffer.LinkVBO(shader.GetAttributeID("colorIn"),
+		buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 			Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
-		m_buffer.LinkVBO(shader.GetAttributeID("textureIn"),
+		buffer.LinkVBO(shader.GetAttributeID("textureIn"),
 			Buffer::VBO::TextureBuffer, Buffer::ComponentSize::UV, Buffer::DataType::FloatData);
 
 		glBindTexture(GL_TEXTURE_2D, glyph.ID);
 
-		m_buffer.Render(Buffer::RenderMode::Triangles);
+		buffer.Render(Buffer::RenderMode::Triangles);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -292,5 +274,5 @@ void Text::Render(Shader& shader)
 //================================================================================================
 void Text::SendToShader(Shader& shader)
 {
-	shader.SendData("model", m_transform.GetMatrix());
+	shader.SendData("model", transform.GetMatrix());
 }

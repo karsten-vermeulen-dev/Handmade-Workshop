@@ -26,11 +26,11 @@ public:
 
 private:
 
-	static int s_totalSpheres;
+	static int totalSpheres;
 
-	Buffer m_buffer;
-	GLuint m_slices;
-	GLfloat m_radius;
-	GLuint m_segments;
+	Buffer buffer;
+	GLuint slices;
+	GLfloat radius;
+	GLuint segments;
 
 };
