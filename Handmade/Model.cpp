@@ -340,10 +340,11 @@ void Model::Render(Shader& shader)
 {
 	assert(!tag.empty());
 
-	normalMatrix = glm::inverse(glm::mat3(transform.GetMatrix()));
+	auto matrix = GetFinalMatrix();
+	normalMatrix = glm::inverse(matrix);
 
+	shader.SendData("model", matrix);
 	shader.SendData("normal", normalMatrix, true);
-	shader.SendData("model", GetFinalMatrix());
 
 	auto count = 0;
 	for (auto& mesh : meshes)
