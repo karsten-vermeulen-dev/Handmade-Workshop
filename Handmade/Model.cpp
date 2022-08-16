@@ -219,18 +219,9 @@ bool Model::Load(const std::string& tag,
 		meshes.push_back(mesh);
 	}
 
-	//Check if any materials were loaded because there may be a 'mtllib' 
-	//statement missing. This means that no materials, not even default 
-	//ones are loaded so as a last resort, we add a default material
-	if (material.GetGroup().empty())
-	{
-		material.SetGroup("Defaults");
-
-		for (auto& mesh : meshes)
-		{
-			mesh.materialName = defaultMaterial;
-		}
-	}
+	//Check that your .obj file does not have any missing 'mtllib' statements
+	//All .obj model files should be exported with a subsequent .mtl file
+	assert(!material.GetGroup().empty());
 
 	//Make sure the model has a normalized width, height and depth if required
 	if (isNormalized)
@@ -350,8 +341,9 @@ void Model::Render(Shader& shader)
 	assert(!tag.empty());
 
 	normalMatrix = glm::inverse(glm::mat3(transform.GetMatrix()));
+
 	shader.SendData("normal", normalMatrix, true);
-	shader.SendData("model", transform.GetMatrix());
+	shader.SendData("model", GetFinalMatrix());
 
 	auto count = 0;
 	for (auto& mesh : meshes)
@@ -368,7 +360,7 @@ void Model::Render(Shader& shader)
 
 		Material material;
 
-		for (auto mat : material.GetGroup())
+		for (auto mat : this->material.GetGroup())
 		{
 			if (mat.GetName() == mesh.materialName)
 			{
