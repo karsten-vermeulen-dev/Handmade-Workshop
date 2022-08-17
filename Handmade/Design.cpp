@@ -110,8 +110,8 @@ bool Design::OnEnter()
 
 	//===================================================================
 
-   //Find a different way to load standard default materials
-   //Material::Load("Defaults", "Defaults.mtl");
+	//Find a different way to load standard default materials
+	//Material::Load("Defaults", "Defaults.mtl");
 	consoleLog.push_front("Default materials loaded.");
 
 	//===================================================================
@@ -305,88 +305,88 @@ bool Design::Render()
 		object->Render(lightShader);
 	}
 
-	 // axes->GetTransform().SetRotation( grid->GetTransform().GetRotation());
-	 // axes->Render(lightShader);
+	// axes->GetTransform().SetRotation( grid->GetTransform().GetRotation());
+	// axes->Render(lightShader);
 
-	 // cube->GetTransform().SetRotation( grid->GetTransform().GetRotation());
-	 // cube->Render(lightShader);
+	// cube->GetTransform().SetRotation( grid->GetTransform().GetRotation());
+	// cube->Render(lightShader);
 
-	 // model->GetTransform().SetRotation( grid->GetTransform().GetRotation());
-	 // model->Render(lightShader);
+	// model->GetTransform().SetRotation( grid->GetTransform().GetRotation());
+	// model->Render(lightShader);
 
-	 //==============================================================================
-	 //Text rendering & UI
-	 //==============================================================================
+	//==============================================================================
+	//Text rendering & UI
+	//==============================================================================
 
-	 /*textShader.Use();
+	/*textShader.Use();
 
-	  sceneCamera->CreateOrthoView();
-	  sceneCamera->Update(16.0f);
-	  sceneCamera->SendToShader(textShader);
+	 sceneCamera->CreateOrthoView();
+	 sceneCamera->Update(16.0f);
+	 sceneCamera->SendToShader(textShader);
 
-	 auto labelPosition =  sceneCamera->ConvertWorldToScreen( axes->GetArrowTipPositionX());
-	  axesLabelText->IsFirstLetterCentered(true);
-	  axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	  axesLabelText->SetString("X");
-	  axesLabelText->SendToShader(textShader);
-	  axesLabelText->Render(textShader);*/
+	auto labelPosition =  sceneCamera->ConvertWorldToScreen( axes->GetArrowTipPositionX());
+	 axesLabelText->IsFirstLetterCentered(true);
+	 axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
+	 axesLabelText->SetString("X");
+	 axesLabelText->SendToShader(textShader);
+	 axesLabelText->Render(textShader);*/
 
-	  //labelPosition =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionY());
-	  // axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	  // axesLabelText->SendToShader(textShader);
-	  // axesLabelText->SetString("Y");
-	  // axesLabelText->Render(textShader);
+	 //labelPosition =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionY());
+	 // axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
+	 // axesLabelText->SendToShader(textShader);
+	 // axesLabelText->SetString("Y");
+	 // axesLabelText->Render(textShader);
 
-	  //labelPosition =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionZ());
-	  // axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
-	  // axesLabelText->SendToShader(textShader);
-	  // axesLabelText->SetString("Z");
-	  // axesLabelText->Render(textShader);
+	 //labelPosition =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionZ());
+	 // axesLabelText->GetTransform().SetPosition(labelPosition.x, labelPosition.y, 0.0f);
+	 // axesLabelText->SendToShader(textShader);
+	 // axesLabelText->SetString("Z");
+	 // axesLabelText->Render(textShader);
 
-	  //For current testing
-	  /*auto count = 0;
+	 //For current testing
+	 /*auto count = 0;
 
-	  for (auto& text :  text)
+	 for (auto& text :  text)
+	 {
+		 text.GetTransform().SetPosition(10.0f, (resolution.y - 50.0f - count * 100.0f), 0.0f);
+		 text.SendToShader(textShader);
+		 text.Render(textShader);
+		 count++;
+	 }*/
+
+	 // quad->GetTransform().SetRotation( grid->GetTransform().GetRotation());
+	 // quad->Render(*Shader::Instance());
+
+	 // sphere->GetTransform().SetRotation( grid->GetTransform().GetRotation());
+	 // sphere->Render(*Shader::Instance());
+
+	 //TEST CODE to be used later on
+	 /* UICamera->SetOrthoView();
+	  UICamera->Update();
+
+	 glm::vec2 pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionX());
+	  labelX->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
+	  labelX->Render();
+
+	 pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionY());
+	  labelY->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
+	  labelY->Render();
+
+	 pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionZ());
+	  labelZ->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
+	  labelZ->Render();*/
+
+	  /*for (const auto& object :  objects)
 	  {
-		  text.GetTransform().SetPosition(10.0f, (resolution.y - 50.0f - count * 100.0f), 0.0f);
-		  text.SendToShader(textShader);
-		  text.Render(textShader);
-		  count++;
+		  if (object->IsVisible())
+		  {
+			  object->Render(lightShader);
+		  }
 	  }*/
 
-	  // quad->GetTransform().SetRotation( grid->GetTransform().GetRotation());
-	  // quad->Render(*Shader::Instance());
-
-	  // sphere->GetTransform().SetRotation( grid->GetTransform().GetRotation());
-	  // sphere->Render(*Shader::Instance());
-
-	  //TEST CODE to be used later on
-	  /* UICamera->SetOrthoView();
-	   UICamera->Update();
-
-	  glm::vec2 pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionX());
-	   labelX->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	   labelX->Render();
-
-	  pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionY());
-	   labelY->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	   labelY->Render();
-
-	  pixels =  mainCamera->ConvertWorldToScreen( axes->GetArrowTipPositionZ());
-	   labelZ->GetTransform().SetPosition(pixels.x, pixels.y, 0.0f);
-	   labelZ->Render();*/
-
-	   /*for (const auto& object :  objects)
-	   {
-		   if (object->IsVisible())
-		   {
-			   object->Render(lightShader);
-		   }
-	   }*/
-
-	   //==============================================================================
-	   //ImGUI UI (WIP)
-	   //==============================================================================
+	  //==============================================================================
+	  //ImGUI UI (WIP)
+	  //==============================================================================
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
@@ -521,7 +521,7 @@ void Design::RenderMenu()
 			{
 				//TODO - Find a better home for this============================================
 				//For reference:															
-				https://github.com/terminal29/Simple-OpenVR-Driver-Tutorial					
+			https://github.com/terminal29/Simple-OpenVR-Driver-Tutorial					
 
 				vr::EVRInitError* peError = nullptr;
 				vr::VR_Init(peError, vr::EVRApplicationType::VRApplication_Scene);
