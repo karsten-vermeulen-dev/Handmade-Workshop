@@ -521,7 +521,7 @@ void Design::RenderMenu()
 			{
 				//TODO - Find a better home for this============================================
 				//For reference:															
-			https://github.com/terminal29/Simple-OpenVR-Driver-Tutorial					
+				https://github.com/terminal29/Simple-OpenVR-Driver-Tutorial					
 
 				vr::EVRInitError* peError = nullptr;
 				vr::VR_Init(peError, vr::EVRApplicationType::VRApplication_Scene);
