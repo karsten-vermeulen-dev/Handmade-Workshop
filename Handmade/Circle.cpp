@@ -107,6 +107,7 @@ void Circle::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 	GLuint offset = 0;
 	glm::vec4 startColor = glm::vec4(r, g, b, a);
 	buffer.AppendVBO(Buffer::VBO::ColorBuffer, &startColor.r, 16, offset);
+	offset += sizeof(startColor);
 
 	for (GLuint i = 0; i < slices + 1; i++)
 	{
@@ -120,22 +121,25 @@ void Circle::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 //======================================================================================================
 void Circle::Render(Shader& shader)
 {
+	auto matrix = GetFinalMatrix();
+	shader.SendData("model", matrix);
+	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
+
 	//TODO - Find a way to do this only once
 	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
 		Buffer::VBO::VertexBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 
-	//Quick fix to allow child objects without parent objects (this avoids a crash)
-	//TODO - What we require here is a proper parent/child linkage of objects
-	if (parent)
+	//TODO - Add lighting back in when normals have been added
+	if (isLit)
 	{
-		shader.SendData("model", parent->GetTransform().GetMatrix() * transform.GetMatrix());
-	}
+		//buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+			//Buffer::VBO::NormalBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 
-	else
-	{
-		shader.SendData("model", transform.GetMatrix());
+		//normalMatrix = glm::inverse(matrix);
+		//shader.SendData("normal", normalMatrix, true);
+		//material.SendToShader(shader);
 	}
 
 	buffer.Render(Buffer::RenderMode::TriangleFan);

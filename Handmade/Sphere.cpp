@@ -135,6 +135,10 @@ void Sphere::SetColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 //======================================================================================================
 void Sphere::Render(Shader& shader)
 {
+	auto matrix = GetFinalMatrix();
+	shader.SendData("model", matrix);
+	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
+
 	//TODO - Find a way to do this only once
 	//TODO - Find a way to individually set shader attributes based on different shaders
 	buffer.LinkVBO(shader.GetAttributeID("vertexIn"),
@@ -142,13 +146,16 @@ void Sphere::Render(Shader& shader)
 	buffer.LinkVBO(shader.GetAttributeID("colorIn"),
 		Buffer::VBO::ColorBuffer, Buffer::ComponentSize::RGBA, Buffer::DataType::FloatData);
 
-	auto matrix = GetFinalMatrix();
-	normalMatrix = glm::inverse(matrix);
+	//TODO - Add lighting back in when normals have been added
+	if (isLit)
+	{
+		//buffer.LinkVBO(shader.GetAttributeID("normalIn"),
+			//Buffer::VBO::NormalBuffer, Buffer::ComponentSize::XYZ, Buffer::DataType::FloatData);
 
-	shader.SendData("model", matrix);
-	shader.SendData("normal", normalMatrix, true);
-
-	shader.SendData("isTextured", static_cast<GLuint>(isTextured));
+		//normalMatrix = glm::inverse(matrix);
+		//shader.SendData("normal", normalMatrix, true);
+		//material.SendToShader(shader);
+	}
 
 	buffer.Render(Buffer::RenderMode::Triangles);
 }
