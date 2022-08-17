@@ -1,5 +1,4 @@
 #version 460
-#define TOTAL_LIGHTS 1
 
 struct Light
 {
@@ -34,43 +33,7 @@ uniform sampler2D textureImage;
 uniform Light light;
 uniform Material material;
 uniform vec3 cameraPosition;
-//uniform Light lights[TOTAL_LIGHTS];
 
-//=====================================================================
-vec3 AmbientColor(in Light light)
-{
-	return light.ambient * material.ambient;
-}
-//=====================================================================
-vec3 DiffuseColor(in Light light)
-{
-	//calculate the vector between light position and each vertex
-	vec3 lightDirection = normalize(light.position - vertexOut);
-
-	//calculate the dot product between the two vectors
-	float lightIntensity = max(dot(lightDirection, normalOut), 0.0);
-
-	//final diffuse color value
-	return light.diffuse * material.diffuse * lightIntensity;
-}
-//=====================================================================
-vec3 SpecularColor(in Light light)
-{
-	//calculate the vector between light position and each vertex
-	vec3 lightDirection = normalize(light.position - vertexOut);
-
-	//calculate viewing vector between camera and each vertex
-	vec3 viewDirection = normalize(cameraPosition - vertexOut);
-
-	//reflect inverted light direction around the normal
-	vec3 reflection = reflect(-lightDirection, normalOut);
-
-	//calculate the specular term
-	float specularTerm = pow(max(dot(viewDirection, reflection), 0.0), material.shininess);
-
-	//final specular color
-	return light.specular * material.specular * specularTerm;
-}
 //=====================================================================
 //float Attenuation(in Light light)
 //{
@@ -82,24 +45,28 @@ vec3 SpecularColor(in Light light)
 //=====================================================================
 void main(void)
 {
-	for(int i = 0; i < TOTAL_LIGHTS; i++)
-	{
-		vec3 totalColor = AmbientColor(light) + 
-							DiffuseColor(light) + 
-							SpecularColor(light);
+	//Ambient color
+	vec3 ambientColor = light.ambient * material.ambient;
 
-		//make sure the RGB components never exceed 1.0
-		totalColor.r = min(totalColor.r, 1.0);
-		totalColor.g = min(totalColor.g, 1.0);
-		totalColor.b = min(totalColor.b, 1.0);
+	//Diffuse color	
+	vec3 lightDirection = normalize(light.position - vertexOut);
+	float lightIntensity = max(dot(lightDirection, normalOut), 0.0);
+	vec3 diffuseColor = light.diffuse * material.diffuse * lightIntensity;
 
-		//add on ATTENUATION before appending to final color value
-		//pixelColor += vec4(totalColor) * Attenuation(lights[i]), 1.0);
+	//Specular color
+	vec3 viewDirection = normalize(cameraPosition - vertexOut);
+	vec3 reflection = reflect(-lightDirection, normalOut);
+	float specularTerm = pow(max(dot(viewDirection, reflection), 0.0), material.shininess);
+	vec3 specularColor = light.specular * material.specular * specularTerm;
+
+	//Final color
+	vec3 finalColor = min((ambientColor + diffuseColor + specularColor), 1.0);
+
+	//add on ATTENUATION before appending to final color value
+	//pixelColor += vec4(totalColor) * Attenuation(lights[i]), 1.0);
 			
-		//TEMP do not apply attenuation
-		pixelColor += (colorOut * vec4(totalColor, 1.0));
-	}
-
+	pixelColor += (colorOut * vec4(finalColor, 1.0));
+	
 	//if object is also textured then add texel color value
 	if(isTextured)
 	{
