@@ -51,7 +51,7 @@ bool Text::Load(const std::string& tag, const std::string& filename, GLuint font
 	//FontType font;
 
 	//Generate a glyph for all 128 ASCII characters
-	for (int i = 0; i < totalASCIICharacters; i++)
+	for (int i = 0; i < (int)totalASCIICharacters; i++)
 	{
 		if (FT_Load_Char(freetypeFace, i, FT_LOAD_RENDER))
 		{
