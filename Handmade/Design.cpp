@@ -292,17 +292,28 @@ bool Design::Render()
 	//==============================================================================
 
 	grid->Render(mainShader);
-
+	
 	lightShader.Use();
 	lightShader.SendData("cameraPosition", sceneCamera->GetTransform().GetPosition());
-	sceneCamera->SendToShader(lightShader);
-
+	
 	light->SendToShader(lightShader);
+	sceneCamera->SendToShader(lightShader);
+	
 	light->Render(lightShader);
 
 	for (const auto& object : objects)
 	{
-		object->Render(lightShader);
+		if (object->IsLit())
+		{
+			lightShader.Use();
+			object->Render(lightShader);
+		}
+
+		else
+		{
+			mainShader.Use();
+			object->Render(mainShader);
+		}
 	}
 
 	// axes->GetTransform().SetRotation( grid->GetTransform().GetRotation());
@@ -650,6 +661,12 @@ void Design::RenderPropertiesWindow()
 	if (activeObject)
 	{
 		ImGui::TextColored({ 0.0f, 0.56f, 0.8f, 1.0f }, activeObject->GetTag().c_str());
+		ImGui::Separator();
+		
+		bool isLit = activeObject->IsLit();
+		ImGui::Checkbox("Add lighting", &isLit);
+		activeObject->IsLit(isLit);
+
 		ImGui::Separator();
 
 		for (int i = 0; i < 5; i++)
