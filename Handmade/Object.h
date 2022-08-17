@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Shader.h"
+#include "Material.h"
 #include "Transform.h"
 
 class Object
@@ -60,6 +61,7 @@ protected:
 	glm::mat3 normalMatrix{ 1.0f };
 
 	std::string tag;
+	Material material;
 	Transform transform;
 
 	Object* parent{ nullptr };

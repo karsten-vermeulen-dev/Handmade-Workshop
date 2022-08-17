@@ -4,7 +4,12 @@
 #include "Shader.h"
 
 //======================================================================================================
-Object::Object(const std::string& tag) : tag(tag) {}
+Object::Object(const std::string& tag) : tag(tag) 
+{
+	material.SetAmbient(0.4f, 0.4f, 0.4f);
+	material.SetDiffuse(0.75f, 0.75f, 0.75f);
+	material.SetSpecular(0.25, 0.25f, 0.25f);
+}
 //======================================================================================================
 bool Object::IsLit() const
 {
