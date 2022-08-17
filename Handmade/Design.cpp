@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
+#include <openvr.h>
 
 #include "BoxCollider.h"
 #include "Design.h"
@@ -514,6 +515,17 @@ void Design::RenderMenu()
 			if (ImGui::MenuItem("Audio...", nullptr, nullptr))
 			{
 				//Handle menu item...
+			}
+
+			if (ImGui::MenuItem("VR", nullptr, nullptr))
+			{
+				//TODO - Find a better home for this============================================
+				//For reference:															
+				https://github.com/terminal29/Simple-OpenVR-Driver-Tutorial					
+
+				vr::EVRInitError* peError = nullptr;
+				vr::VR_Init(peError, vr::EVRApplicationType::VRApplication_Scene);
+				//==============================================================================
 			}
 
 			ImGui::EndMenu();
