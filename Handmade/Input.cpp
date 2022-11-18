@@ -171,9 +171,23 @@ void Input::Update()
 		{
 			switch (events.button.button)
 			{
-			case SDL_BUTTON_LEFT: { isLeftButtonClicked = false; break; }
-			case SDL_BUTTON_RIGHT: { isRightButtonClicked = false; break; }
-			case SDL_BUTTON_MIDDLE: { isMiddleButtonClicked = false; break; }
+			case SDL_BUTTON_LEFT:
+			{
+				isLeftButtonClicked = false;
+				break;
+			}
+
+			case SDL_BUTTON_RIGHT:
+			{
+				isRightButtonClicked = false;
+				break;
+			}
+
+			case SDL_BUTTON_MIDDLE:
+			{
+				isMiddleButtonClicked = false;
+				break;
+			}
 			}
 
 			break;
@@ -183,10 +197,25 @@ void Input::Update()
 		{
 			switch (events.button.button)
 			{
-			case SDL_BUTTON_LEFT: { isLeftButtonClicked = true; break; }
-			case SDL_BUTTON_RIGHT: { isRightButtonClicked = true; break; }
-			case SDL_BUTTON_MIDDLE: { isMiddleButtonClicked = true; break; }
+			case SDL_BUTTON_LEFT: 
+			{ 
+				isLeftButtonClicked = true; 
+				break; 
 			}
+
+			case SDL_BUTTON_RIGHT: 
+			{ 
+				isRightButtonClicked = true; 
+				break; 
+			}
+
+			case SDL_BUTTON_MIDDLE: 
+			{ 
+				isMiddleButtonClicked = true; 
+				break; 
+			}
+			}
+
 			break;
 		}
 		}
